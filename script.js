@@ -88,15 +88,19 @@ window.addEventListener('keydown', (event) => {
   switch (event.key) {
     case 'ArrowUp':
       lastKey.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
+      direction = 'up';
       break;
     case 'ArrowDown':
       lastKey.innerHTML = '<i class="fa-solid fa-arrow-down"></i>';
+      direction = 'down';
       break;
     case 'ArrowLeft':
       lastKey.innerHTML = '<i class="fa-solid fa-arrow-left"></i>';
+      direction = 'left';
       break;
     case 'ArrowRight':
       lastKey.innerHTML = '<i class="fa-solid fa-arrow-right"></i>';
+      direction = 'right';
       break;
   }
 });
@@ -121,13 +125,15 @@ function moveSnake(direction) {
 }
 
 function drawSnake() {
-  console.log(currentColumn, currentRow);
-  let head = document.querySelector(`.r${currentRow}.c${currentColumn}`);
-  head.style.backgroundColor = 'purple';
+  console.log(currentRow, currentColumn);
+  //head = document.querySelector(`.r${currentRow}.c${currentColumn}`);
+  //head.style.backgroundColor = 'purple';
 }
 
-setInterval(moveSnake(direction), 1000);
-setInterval(drawSnake(), 1000);
+setInterval(() => {
+  moveSnake(direction);
+  drawSnake();
+}, 100);
 
 function increaseScore() {
   score.innerText++;
