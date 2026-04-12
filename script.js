@@ -9,7 +9,7 @@ const gamePage = document.querySelector('#game');
 const restartButton = document.querySelector('#restart');
 const score = document.querySelector('#score');
 const lastKey = document.querySelector('#lastKey');
-const headPositions = [];
+
 //make 30x30 grid
 function makeGrid() {
   gridContainer = document.createElement('div');
@@ -49,6 +49,7 @@ function toggleMusic() {
 }
 
 function restart() {
+  snake.positions.length = 0;
   document.getElementById('game').removeChild(gridContainer);
   makeGrid();
   startSnake();
@@ -60,15 +61,36 @@ function returnToMenu() {
   document.getElementById('game').removeChild(gridContainer);
 }
 
+//starting definitions
 let currentRow = 1;
 let currentColumn = 1;
+let head = document.querySelector(`.r${currentRow}.c${currentColumn}`);
+let tail = document.querySelector(`.r${currentRow + 1}.c${currentColumn}`);
+let direction = 'up';
+let snake = {
+  positions: [],
+  length: 2,
+  head: '',
+};
+let pulse;
 
 //exit menu and create 2 pixel snake
 function startGame() {
   makeGrid();
   document.querySelector('body').removeChild(menu);
   resetScore();
+  snake.positions.length = 0;
   startSnake();
+  console.log(snake.positions);
+  drawSnake();
+  //moves, checks for overflow and then draws
+  if (pulse !== null) {
+    clearInterval(pulse);
+  }
+  pulse = setInterval(() => {
+    moveSnake(direction);
+    drawSnake();
+  }, 500);
 }
 
 function startSnake() {
@@ -76,11 +98,10 @@ function startSnake() {
   currentRow = Math.floor(Math.random() * 20 + 5);
   currentColumn = Math.floor(Math.random() * 30 + 5);
   console.log(currentRow, currentColumn);
-  let head = document.querySelector(`.r${currentRow}.c${currentColumn}`);
-  let tail = document.querySelector(`.r${currentRow + 1}.c${currentColumn}`);
-  headPositions.push(head);
-  head.style.backgroundColor = 'purple';
-  tail.style.backgroundColor = 'purple';
+  snake.head = document.querySelector(`.r${currentRow}.c${currentColumn}`);
+  tail = document.querySelector(`.r${currentRow + 1}.c${currentColumn}`);
+  snake.positions.push(tail);
+  snake.positions.push(snake.head);
 }
 
 //arrow keypresses
@@ -105,8 +126,6 @@ window.addEventListener('keydown', (event) => {
   }
 });
 
-let direction = 'up';
-
 function moveSnake(direction) {
   switch (direction) {
     case 'up':
@@ -122,12 +141,21 @@ function moveSnake(direction) {
       currentColumn += 1;
       break;
   }
+  overflow();
+  console.log(currentRow, currentColumn);
+  head = document.querySelector(`.r${currentRow}.c${currentColumn}`);
+  snake.positions.push(head);
+  console.log(snake.positions);
 }
 
 function drawSnake() {
-  console.log(currentRow, currentColumn);
-  //head = document.querySelector(`.r${currentRow}.c${currentColumn}`);
-  //head.style.backgroundColor = 'purple';
+  for (let i = 0; i < snake.positions.length - snake.length; i++) {
+    snake.positions[i].style.backgroundColor = 'greenyellow';
+  }
+  for (let i = snake.length; i >= 0; i--) {
+    snake.positions[snake.positions.length - 1].style.backgroundColor =
+      'purple';
+  }
 }
 
 function overflow() {
@@ -144,13 +172,6 @@ function overflow() {
     currentColumn = 40;
   }
 }
-
-//moves, checks for overflow and then draws
-setInterval(() => {
-  moveSnake(direction);
-  overflow();
-  drawSnake();
-}, 800);
 
 function increaseScore() {
   score.innerText++;
