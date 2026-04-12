@@ -9,6 +9,8 @@ const gamePage = document.querySelector('#game');
 const restartButton = document.querySelector('#restart');
 const score = document.querySelector('#score');
 const lastKey = document.querySelector('#lastKey');
+const difficultyButton = document.querySelector('#difficultyButton');
+const difficultyDisplay = document.querySelector('#difficulty');
 
 //make 30x30 grid
 function makeGrid() {
@@ -35,6 +37,7 @@ start.addEventListener('click', startGame);
 returnButton.addEventListener('click', returnToMenu);
 musicButton.addEventListener('click', toggleMusic);
 restartButton.addEventListener('click', restart);
+difficultyButton.addEventListener('click', changeDifficulty);
 
 //music
 musicFile.loop = true;
@@ -49,11 +52,8 @@ function toggleMusic() {
 }
 
 function restart() {
-  snake.positions.length = 0;
   document.getElementById('game').removeChild(gridContainer);
-  makeGrid();
-  startSnake();
-  resetScore();
+  startGame();
 }
 
 function returnToMenu() {
@@ -62,45 +62,56 @@ function returnToMenu() {
 }
 
 //starting definitions
-let currentRow = 1;
-let currentColumn = 1;
-let head = document.querySelector(`.r${currentRow}.c${currentColumn}`);
-let tail = document.querySelector(`.r${currentRow + 1}.c${currentColumn}`);
-let direction = 'up';
 let snake = {
   positions: [],
   length: 2,
   head: '',
+  row: 1,
+  column: 1,
 };
+let apple = {
+  row: 1,
+  column: 1,
+  pixel: '',
+};
+snake.head = document.querySelector(`.r${snake.row}.c${snake.column}`);
+let tail = document.querySelector(`.r${snake.row + 1}.c${snake.column}`);
+let direction = 'up';
 let pulse;
 let oldTail = '';
+let difficulty = 'Normal';
+let pulseFrequency = 500;
 
 //exit menu and create 2 pixel snake
 function startGame() {
   makeGrid();
-  document.querySelector('body').removeChild(menu);
+  if (document.querySelector('body').contains(menu)) {
+    document.querySelector('body').removeChild(menu);
+  }
   resetScore();
   snake.positions.length = 0;
   startSnake();
   console.log(snake.positions);
   drawSnake();
+  generateApple();
   //moves, checks for overflow and then draws
   if (pulse !== null) {
     clearInterval(pulse);
   }
   pulse = setInterval(() => {
+    eatApple();
     moveSnake(direction);
     drawSnake();
-  }, 500);
+  }, pulseFrequency);
 }
 
 function startSnake() {
   //safe 5-pixel margin
-  currentRow = Math.floor(Math.random() * 20 + 5);
-  currentColumn = Math.floor(Math.random() * 30 + 5);
-  console.log(currentRow, currentColumn);
-  snake.head = document.querySelector(`.r${currentRow}.c${currentColumn}`);
-  tail = document.querySelector(`.r${currentRow + 1}.c${currentColumn}`);
+  snake.row = Math.floor(Math.random() * 20 + 5);
+  snake.column = Math.floor(Math.random() * 30 + 5);
+  console.log(snake.row, snake.column);
+  snake.head = document.querySelector(`.r${snake.row}.c${snake.column}`);
+  tail = document.querySelector(`.r${snake.row + 1}.c${snake.column}`);
   snake.positions.push(tail);
   snake.positions.push(snake.head);
 }
@@ -138,59 +149,54 @@ window.addEventListener('keydown', (event) => {
 function moveSnake(direction) {
   switch (direction) {
     case 'up':
-      currentRow -= 1;
+      snake.row -= 1;
       break;
     case 'down':
-      currentRow += 1;
+      snake.row += 1;
       break;
     case 'left':
-      currentColumn -= 1;
+      snake.column -= 1;
       break;
     case 'right':
-      currentColumn += 1;
+      snake.column += 1;
       break;
   }
   overflow();
-  console.log(currentRow, currentColumn);
-  head = document.querySelector(`.r${currentRow}.c${currentColumn}`);
-  snake.positions.push(head);
+  console.log(`Snake row:${snake.row}\nSnake column:${snake.column}`);
+  snake.head = document.querySelector(`.r${snake.row}.c${snake.column}`);
+  snake.positions.push(snake.head);
   eraseTail();
   console.log(snake.positions);
-  generateApple();
+  //checkColision();
 }
 
 function drawSnake() {
-  for (let i = snake.length; i >= 1; i--) {
-    snake.positions[snake.positions.length - 1].style.backgroundColor =
-      'purple';
+  for (let i = 0; i < snake.length; i++) {
+    snake.positions[i].style.backgroundColor = 'purple';
   }
+  snake.positions[snake.positions.length - 1].style.backgroundColor = 'pink';
 }
 
 function eraseTail() {
   oldTail = snake.positions.splice(0, snake.positions.length - snake.length);
-  console.log(`oldTail: ${oldTail[0].classList}`);
   for (let i = oldTail.length; i > 0; i--) {
     oldTail[i - 1].style.backgroundColor = 'yellowgreen';
   }
 }
 
 function overflow() {
-  if (currentRow > 30 && direction == 'down') {
-    currentRow = 1;
+  if (snake.row > 30 && direction == 'down') {
+    snake.row = 1;
   }
-  if (currentRow < 1 && direction == 'up') {
-    currentRow = 30;
+  if (snake.row < 1 && direction == 'up') {
+    snake.row = 30;
   }
-  if (currentColumn > 40 && direction == 'right') {
-    currentColumn = 1;
+  if (snake.column > 40 && direction == 'right') {
+    snake.column = 1;
   }
-  if (currentColumn < 1 && direction == 'left') {
-    currentColumn = 40;
+  if (snake.column < 1 && direction == 'left') {
+    snake.column = 40;
   }
-}
-
-function increaseScore() {
-  score.innerText++;
 }
 
 function resetScore() {
@@ -198,15 +204,61 @@ function resetScore() {
 }
 
 function generateApple() {
-  appleRow = Math.floor(Math.random() * 20 + 5);
-  appleColumn = Math.floor(Math.random() * 30 + 5);
-  while (Math.abs(appleRow - currentRow) < 3) {
-    appleRow = Math.floor(Math.random() * 30 + 5);
+  apple.row = Math.floor(Math.random() * 20 + 5);
+  apple.column = Math.floor(Math.random() * 30 + 5);
+  while (Math.abs(apple.row - snake.row) < 3) {
+    apple.row = Math.floor(Math.random() * 30 + 5);
   }
-  while (Math.abs(appleColumn - currentColumn) < 3) {
-    appleColumn = Math.floor(Math.random() * 30 + 5);
+  while (Math.abs(apple.column - snake.column) < 3) {
+    apple.column = Math.floor(Math.random() * 30 + 5);
   }
-  console.log(`Apple row: ${appleRow}\nApple column: ${appleColumn}`);
+  console.log(`Apple row: ${apple.row}\nApple column: ${apple.column}`);
+  apple.pixel = document.querySelector(`.r${apple.row}.c${apple.column}`);
+  apple.pixel.style.backgroundColor = 'red';
 }
 
-function paintApple
+function eatApple() {
+  console.log(
+    `snake.head${snake.head.classList}\napple.pixel${apple.pixel.classList}`,
+  );
+  if (snake.head.classList == apple.pixel.classList) {
+    growSnake(1);
+    generateApple();
+  }
+}
+
+function growSnake(growth) {
+  score.innerText = parseInt(score.innerText) + growth;
+  snake.length += growth;
+}
+
+function changeDifficulty() {
+  if (difficulty == 'Normal') {
+    difficulty = 'Difícil';
+  } else if (difficulty == 'Difícil') {
+    difficulty = 'Fácil';
+  } else if (difficulty == 'Fácil') {
+    difficulty = 'Normal';
+  }
+  difficultyDisplay.innerText = difficulty;
+
+  if (difficulty == 'Normal') {
+    pulseFrequency = 500;
+  }
+  if (difficulty == 'Fácil') {
+    pulseFrequency = 700;
+  }
+  if (difficulty == 'Difícil') {
+    pulseFrequency = 300;
+  }
+}
+
+/*function checkColision() {
+  if (
+    snake.positions.indexOf(snake.head) !=
+    snake.column.positions.lastIndexOf(snake.head)
+  ) {
+    restart();
+  }
+}
+*/
