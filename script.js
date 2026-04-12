@@ -156,6 +156,7 @@ function moveSnake(direction) {
   snake.positions.push(head);
   eraseTail();
   console.log(snake.positions);
+  generateApple();
 }
 
 function drawSnake() {
@@ -167,7 +168,7 @@ function drawSnake() {
 
 function eraseTail() {
   oldTail = snake.positions.splice(0, snake.positions.length - snake.length);
-  console.log(`oldTail: ${oldTail}`);
+  console.log(`oldTail: ${oldTail[0].classList}`);
   for (let i = oldTail.length; i > 0; i--) {
     oldTail[i - 1].style.backgroundColor = 'yellowgreen';
   }
@@ -195,3 +196,17 @@ function increaseScore() {
 function resetScore() {
   score.innerText = '0';
 }
+
+function generateApple() {
+  appleRow = Math.floor(Math.random() * 20 + 5);
+  appleColumn = Math.floor(Math.random() * 30 + 5);
+  while (Math.abs(appleRow - currentRow) < 3) {
+    appleRow = Math.floor(Math.random() * 30 + 5);
+  }
+  while (Math.abs(appleColumn - currentColumn) < 3) {
+    appleColumn = Math.floor(Math.random() * 30 + 5);
+  }
+  console.log(`Apple row: ${appleRow}\nApple column: ${appleColumn}`);
+}
+
+function paintApple
