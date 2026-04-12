@@ -130,10 +130,27 @@ function drawSnake() {
   //head.style.backgroundColor = 'purple';
 }
 
+function overflow() {
+  if (currentRow > 30 && direction == 'down') {
+    currentRow = 1;
+  }
+  if (currentRow < 1 && direction == 'up') {
+    currentRow = 30;
+  }
+  if (currentColumn > 40 && direction == 'right') {
+    currentColumn = 1;
+  }
+  if (currentColumn < 1 && direction == 'left') {
+    currentColumn = 40;
+  }
+}
+
+//moves, checks for overflow and then draws
 setInterval(() => {
   moveSnake(direction);
+  overflow();
   drawSnake();
-}, 100);
+}, 800);
 
 function increaseScore() {
   score.innerText++;
