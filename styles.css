@@ -1,0 +1,120 @@
+* {
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+button {
+  text-align: center;
+  margin-top: 0;
+  margin-bottom: 0;
+  border-radius: 30px;
+  font-size: 3vw;
+  padding: 30px;
+  min-height: 10vh;
+  width: 25vw;
+  border: 0;
+}
+
+.pixel {
+  width: 3vh;
+  height: 3vh;
+  background-color: greenyellow;
+}
+
+#game {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+
+/*
+#grid {
+  display: flex;
+  flex-direction: column;
+}
+*/
+
+.row {
+  display: flex;
+  flex-direction: row;
+}
+
+.r10 {
+  margin: 0px;
+}
+
+body,
+html {
+  margin: 0;
+  padding: 10px;
+  border: 0;
+}
+
+html {
+  background-color: lightblue;
+}
+
+#stripe3 {
+  flex-direction: column;
+  justify-content: space-evenly;
+  height: 80vh;
+}
+
+#menu {
+  position: fixed;
+  height: 100vh;
+  width: 100vw;
+  top: 0;
+  left: 0;
+  background-color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+}
+
+h1,
+h2 {
+  color: white;
+  text-align: center;
+  font-size: 10vw;
+  margin: 0;
+}
+
+#difficultyButton,
+#musicButton,
+#scoreboard {
+  border-radius: 30px 30px 0 0;
+}
+
+p,
+i,
+#lastKey {
+  font-size: 3vw;
+  padding: 30px;
+  background-color: white;
+  border-radius: 30px 30px;
+  color: black;
+  text-align: center;
+  margin: 0;
+}
+i {
+  padding: 0;
+}
+
+.compoundButton p {
+  border-radius: 0 0 30px 30px;
+}
+
+div {
+  display: flex;
+  justify-content: space-around;
+}
+
+.compoundButton {
+  display: flex;
+  flex-direction: column;
+}
+
+#stripe3 p,
+#stripe3 button {
+  font-size: 2.5vw;
+}
