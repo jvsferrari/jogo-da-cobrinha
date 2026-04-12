@@ -73,6 +73,7 @@ let snake = {
   head: '',
 };
 let pulse;
+let oldTail = '';
 
 //exit menu and create 2 pixel snake
 function startGame() {
@@ -145,17 +146,20 @@ function moveSnake(direction) {
   console.log(currentRow, currentColumn);
   head = document.querySelector(`.r${currentRow}.c${currentColumn}`);
   snake.positions.push(head);
+  // oldTail = snake.positions.shift();
+  eraseTail();
   console.log(snake.positions);
 }
 
 function drawSnake() {
-  for (let i = 0; i < snake.positions.length - snake.length; i++) {
-    snake.positions[i].style.backgroundColor = 'greenyellow';
-  }
-  for (let i = snake.length; i >= 0; i--) {
+  for (let i = snake.length; i >= 1; i--) {
     snake.positions[snake.positions.length - 1].style.backgroundColor =
       'purple';
   }
+}
+
+function eraseTail() {
+  snake.positions.splice(0, snake.positions.length - snake.length);
 }
 
 function overflow() {
@@ -180,5 +184,3 @@ function increaseScore() {
 function resetScore() {
   score.innerText = '0';
 }
-
-function changeDirection() {}
