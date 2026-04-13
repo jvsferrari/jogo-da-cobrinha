@@ -65,6 +65,7 @@ function returnToMenu() {
 }
 
 //starting definitions
+//snake object
 let snake = {
   positions: [],
   length: 2,
@@ -72,7 +73,9 @@ let snake = {
   row: 1,
   column: 1,
   direction: 'up',
+  hasChangedDirection: false,
 };
+//apple object
 let apple = {
   row: 1,
   column: 1,
@@ -85,7 +88,7 @@ let oldTail = '';
 let difficulty = 'Normal';
 let pulseFrequency = 500;
 
-//exit menu and create 2 pixel snake
+//exit menu, create 2 pixel snake, create grid(if it does noot exist), reset score, positions and snake.length, start and draw snake and apple, start pulsing
 function startGame() {
   gamePage.style.display = 'flex';
   makeGrid();
@@ -112,6 +115,7 @@ function beat() {
       moveSnake(snake.direction);
       drawSnake();
       beat();
+      snake.hasChangedDirection = false;
     }, pulseFrequency);
     console.log(pulseFrequency);
   }
@@ -129,37 +133,39 @@ function startSnake() {
 }
 
 //arrow keypresses
-window.addEventListener('keydown', changeDirection());
+window.addEventListener('keydown', (event) => {
+  //avoid changing direction more than once per pulse
+  if (snake.hasChangedDirection == false) {
+    switch (event.key) {
+      case 'ArrowUp':
+        if (snake.direction != 'down') {
+          lastKey.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
+          snake.direction = 'up';
+        }
+        break;
+      case 'ArrowDown':
+        if (snake.direction != 'up') {
+          lastKey.innerHTML = '<i class="fa-solid fa-arrow-down"></i>';
+          snake.direction = 'down';
+        }
+        break;
 
-function changeDirection(event) {
-  switch (event.key) {
-    case 'ArrowUp':
-      if (snake.direction != 'down') {
-        lastKey.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
-        snake.direction = 'up';
-      }
-      break;
-    case 'ArrowDown':
-      if (snake.direction != 'up') {
-        lastKey.innerHTML = '<i class="fa-solid fa-arrow-down"></i>';
-        snake.direction = 'down';
-      }
-      break;
-
-    case 'ArrowLeft':
-      if (snake.direction != 'right') {
-        lastKey.innerHTML = '<i class="fa-solid fa-arrow-left"></i>';
-        snake.direction = 'left';
-      }
-      break;
-    case 'ArrowRight':
-      if (snake.direction != 'left') {
-        lastKey.innerHTML = '<i class="fa-solid fa-arrow-right"></i>';
-        snake.direction = 'right';
-      }
-      break;
+      case 'ArrowLeft':
+        if (snake.direction != 'right') {
+          lastKey.innerHTML = '<i class="fa-solid fa-arrow-left"></i>';
+          snake.direction = 'left';
+        }
+        break;
+      case 'ArrowRight':
+        if (snake.direction != 'left') {
+          lastKey.innerHTML = '<i class="fa-solid fa-arrow-right"></i>';
+          snake.direction = 'right';
+        }
+        break;
+    }
+    snake.hasChangedDirection = true;
   }
-}
+});
 
 function moveSnake(direction) {
   switch (direction) {
