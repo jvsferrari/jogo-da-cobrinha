@@ -102,11 +102,10 @@ function startGame() {
   console.log(snake.positions);
   drawSnake();
   generateApple();
-  //moves, checks for overflow and then draws
-
   beat();
 }
 
+//pulses moving snake and checking if apple was eaten, calls itself
 function beat() {
   if (pulseFrequency >= 50) {
     clearInterval(pulse);
@@ -120,7 +119,7 @@ function beat() {
     console.log(pulseFrequency);
   }
 }
-
+//start snake and push first and second positions' values
 function startSnake() {
   //safe 5-pixel margin
   snake.row = Math.floor(Math.random() * 20 + 5);
@@ -167,6 +166,7 @@ window.addEventListener('keydown', (event) => {
   }
 });
 
+//move snake according to direction and erase tail
 function moveSnake(direction) {
   switch (direction) {
     case 'up':
@@ -205,6 +205,7 @@ function eraseTail() {
   }
 }
 
+//check if snake has hit a border
 function overflow() {
   if (snake.row > 30 && snake.direction == 'down') {
     snake.row = 1;
@@ -224,6 +225,7 @@ function resetScore() {
   score.innerText = '0';
 }
 
+//generate and draw apple at least 3 pixels away from head and only where there is no snake body
 function generateApple() {
   apple.row = Math.floor(Math.random() * 20 + 5);
   apple.column = Math.floor(Math.random() * 30 + 5);
@@ -242,6 +244,7 @@ function generateApple() {
   apple.pixel.style.backgroundColor = 'red';
 }
 
+//check if apple was eaten; increase score, generate apple and speed up the game if the apple was eaten
 function eatApple() {
   /*
   console.log(
@@ -260,6 +263,7 @@ function growSnake(growth) {
   snake.length += growth;
 }
 
+//change game speed according to difficulty
 function changeDifficulty() {
   if (difficulty == 'Normal') {
     difficulty = 'Difícil';
@@ -281,6 +285,7 @@ function changeDifficulty() {
   }
 }
 
+//check if the snake's head has hit its body
 function checkColision() {
   if (
     snake.positions.indexOf(snake.head) !=
