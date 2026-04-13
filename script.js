@@ -58,7 +58,7 @@ function restart() {
 }
 
 function returnToMenu() {
-  gamePage.style.display = "none";
+  gamePage.style.display = 'none';
   document.querySelector('body').prepend(menu);
   document.getElementById('game').removeChild(gridContainer);
   clearInterval(pulse);
@@ -71,6 +71,7 @@ let snake = {
   head: '',
   row: 1,
   column: 1,
+  direction: 'up',
 };
 let apple = {
   row: 1,
@@ -79,7 +80,6 @@ let apple = {
 };
 snake.head = document.querySelector(`.r${snake.row}.c${snake.column}`);
 let tail = document.querySelector(`.r${snake.row + 1}.c${snake.column}`);
-let direction = 'up';
 let pulse;
 let oldTail = '';
 let difficulty = 'Normal';
@@ -87,7 +87,7 @@ let pulseFrequency = 500;
 
 //exit menu and create 2 pixel snake
 function startGame() {
-  gamePage.style.display = "flex";
+  gamePage.style.display = 'flex';
   makeGrid();
   if (document.querySelector('body').contains(menu)) {
     document.querySelector('body').removeChild(menu);
@@ -109,7 +109,7 @@ function beat() {
     clearInterval(pulse);
     pulse = setInterval(() => {
       eatApple();
-      moveSnake(direction);
+      moveSnake(snake.direction);
       drawSnake();
       beat();
     }, pulseFrequency);
@@ -129,34 +129,37 @@ function startSnake() {
 }
 
 //arrow keypresses
-window.addEventListener('keydown', (event) => {
+window.addEventListener('keydown', changeDirection());
+
+function changeDirection(event) {
   switch (event.key) {
     case 'ArrowUp':
-      if (direction != 'down') {
+      if (snake.direction != 'down') {
         lastKey.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
-        direction = 'up';
+        snake.direction = 'up';
       }
       break;
     case 'ArrowDown':
-      if (direction != 'up') {
+      if (snake.direction != 'up') {
         lastKey.innerHTML = '<i class="fa-solid fa-arrow-down"></i>';
-        direction = 'down';
+        snake.direction = 'down';
       }
       break;
+
     case 'ArrowLeft':
-      if (direction != 'right') {
+      if (snake.direction != 'right') {
         lastKey.innerHTML = '<i class="fa-solid fa-arrow-left"></i>';
-        direction = 'left';
+        snake.direction = 'left';
       }
       break;
     case 'ArrowRight':
-      if (direction != 'left') {
+      if (snake.direction != 'left') {
         lastKey.innerHTML = '<i class="fa-solid fa-arrow-right"></i>';
-        direction = 'right';
+        snake.direction = 'right';
       }
       break;
   }
-});
+}
 
 function moveSnake(direction) {
   switch (direction) {
@@ -179,7 +182,7 @@ function moveSnake(direction) {
   snake.positions.push(snake.head);
   eraseTail();
   console.log(snake.positions);
-  //checkColision();
+  checkColision();
 }
 
 function drawSnake() {
@@ -197,16 +200,16 @@ function eraseTail() {
 }
 
 function overflow() {
-  if (snake.row > 30 && direction == 'down') {
+  if (snake.row > 30 && snake.direction == 'down') {
     snake.row = 1;
   }
-  if (snake.row < 1 && direction == 'up') {
+  if (snake.row < 1 && snake.direction == 'up') {
     snake.row = 30;
   }
-  if (snake.column > 40 && direction == 'right') {
+  if (snake.column > 40 && snake.direction == 'right') {
     snake.column = 1;
   }
-  if (snake.column < 1 && direction == 'left') {
+  if (snake.column < 1 && snake.direction == 'left') {
     snake.column = 40;
   }
 }
@@ -218,11 +221,15 @@ function resetScore() {
 function generateApple() {
   apple.row = Math.floor(Math.random() * 20 + 5);
   apple.column = Math.floor(Math.random() * 30 + 5);
-  while (Math.abs(apple.row - snake.row) < 3) {
+  apple.pixel = document.querySelector(`.r${apple.row}.c${apple.column}`);
+  while (
+    Math.abs(apple.row - snake.row) < 3 ||
+    Math.abs(apple.column - snake.column) < 3 ||
+    snake.positions.includes(apple.pixel)
+  ) {
     apple.row = Math.floor(Math.random() * 20 + 5);
-  }
-  while (Math.abs(apple.column - snake.column) < 3) {
     apple.column = Math.floor(Math.random() * 30 + 5);
+    apple.pixel = document.querySelector(`.r${apple.row}.c${apple.column}`);
   }
   console.log(`Apple row: ${apple.row}\nApple column: ${apple.column}`);
   apple.pixel = document.querySelector(`.r${apple.row}.c${apple.column}`);
@@ -268,12 +275,11 @@ function changeDifficulty() {
   }
 }
 
-/*function checkColision() {
+function checkColision() {
   if (
     snake.positions.indexOf(snake.head) !=
-    snake.column.positions.lastIndexOf(snake.head)
+    snake.positions.lastIndexOf(snake.head)
   ) {
     restart();
   }
 }
-*/
