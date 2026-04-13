@@ -17,6 +17,7 @@ function makeGrid() {
   gridContainer = document.createElement('div');
   gridContainer.style.display = 'flex';
   gridContainer.style.flexDirection = 'column';
+  gridContainer.id = 'gridContainer';
   for (let row = 1; row <= 30; row++) {
     const newRow = document.createElement('div');
     newRow.classList.add('row');
@@ -57,8 +58,10 @@ function restart() {
 }
 
 function returnToMenu() {
+  gamePage.style.display = "none";
   document.querySelector('body').prepend(menu);
   document.getElementById('game').removeChild(gridContainer);
+  clearInterval(pulse);
 }
 
 //starting definitions
@@ -84,12 +87,14 @@ let pulseFrequency = 500;
 
 //exit menu and create 2 pixel snake
 function startGame() {
+  gamePage.style.display = "flex";
   makeGrid();
   if (document.querySelector('body').contains(menu)) {
     document.querySelector('body').removeChild(menu);
   }
   resetScore();
   snake.positions.length = 0;
+  snake.length = 2;
   startSnake();
   console.log(snake.positions);
   drawSnake();
@@ -179,15 +184,15 @@ function moveSnake(direction) {
 
 function drawSnake() {
   for (let i = 0; i < snake.length; i++) {
-    snake.positions[i].style.backgroundColor = 'purple';
+    snake.positions[i].style.backgroundColor = '#FCB7C7';
   }
-  snake.positions[snake.positions.length - 1].style.backgroundColor = 'pink';
+  snake.positions[snake.positions.length - 1].style.backgroundColor = '#CA6180';
 }
 
 function eraseTail() {
   oldTail = snake.positions.splice(0, snake.positions.length - snake.length);
   for (let i = oldTail.length; i > 0; i--) {
-    oldTail[i - 1].style.backgroundColor = 'yellowgreen';
+    oldTail[i - 1].style.backgroundColor = '#2E7D32';
   }
 }
 
@@ -214,7 +219,7 @@ function generateApple() {
   apple.row = Math.floor(Math.random() * 20 + 5);
   apple.column = Math.floor(Math.random() * 30 + 5);
   while (Math.abs(apple.row - snake.row) < 3) {
-    apple.row = Math.floor(Math.random() * 30 + 5);
+    apple.row = Math.floor(Math.random() * 20 + 5);
   }
   while (Math.abs(apple.column - snake.column) < 3) {
     apple.column = Math.floor(Math.random() * 30 + 5);
