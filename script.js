@@ -95,14 +95,21 @@ function startGame() {
   drawSnake();
   generateApple();
   //moves, checks for overflow and then draws
-  if (pulse !== null) {
+
+  beat();
+}
+
+function beat() {
+  if (pulseFrequency >= 50) {
     clearInterval(pulse);
+    pulse = setInterval(() => {
+      eatApple();
+      moveSnake(direction);
+      drawSnake();
+      beat();
+    }, pulseFrequency);
+    console.log(pulseFrequency);
   }
-  pulse = setInterval(() => {
-    eatApple();
-    moveSnake(direction);
-    drawSnake();
-  }, pulseFrequency);
 }
 
 function startSnake() {
@@ -218,12 +225,15 @@ function generateApple() {
 }
 
 function eatApple() {
+  /*
   console.log(
     `snake.head${snake.head.classList}\napple.pixel${apple.pixel.classList}`,
   );
+  */
   if (snake.head.classList == apple.pixel.classList) {
     growSnake(1);
     generateApple();
+    pulseFrequency -= 20;
   }
 }
 
