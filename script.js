@@ -11,6 +11,7 @@ const score = document.querySelector('#score');
 const lastKey = document.querySelector('#lastKey');
 const difficultyButton = document.querySelector('#difficultyButton');
 const difficultyDisplay = document.querySelector('#difficulty');
+let gridContainer;
 
 //make 30x30 grid
 function makeGrid() {
@@ -74,6 +75,8 @@ let snake = {
   column: 1,
   direction: 'up',
   hasChangedDirection: false,
+  allPositions: [],
+  gridIsFull: false,
 };
 //apple object
 let apple = {
@@ -96,6 +99,7 @@ function startGame() {
     document.querySelector('body').removeChild(menu);
   }
   resetScore();
+  snake.allPositions.length = 0;
   snake.positions.length = 0;
   snake.length = 2;
   startSnake();
@@ -113,10 +117,16 @@ function beat() {
       eatApple();
       moveSnake(snake.direction);
       drawSnake();
-      beat();
       snake.hasChangedDirection = false;
+      //erase duplicates
+      snake.allPositions = [...new Set(snake.allPositions)];
+      console.log(`snake.allPositions.length: ${snake.allPositions.length}`);
+      console.log(snake.allPositions);
+      if (snake.gridIsFull == false) {
+        fullGrid();
+      }
+      beat();
     }, pulseFrequency);
-    console.log(pulseFrequency);
   }
 }
 //start snake and push first and second positions' values
@@ -127,6 +137,8 @@ function startSnake() {
   console.log(snake.row, snake.column);
   snake.head = document.querySelector(`.r${snake.row}.c${snake.column}`);
   tail = document.querySelector(`.r${snake.row + 1}.c${snake.column}`);
+  snake.allPositions.push(tail);
+  snake.allPositions.push(snake.head);
   snake.positions.push(tail);
   snake.positions.push(snake.head);
 }
@@ -185,7 +197,9 @@ function moveSnake(direction) {
   overflow();
   console.log(`Snake row:${snake.row}\nSnake column:${snake.column}`);
   snake.head = document.querySelector(`.r${snake.row}.c${snake.column}`);
+  //pushes the new position and then splices the old
   snake.positions.push(snake.head);
+  snake.allPositions.push(snake.head);
   eraseTail();
   console.log(snake.positions);
   checkColision();
@@ -259,8 +273,12 @@ function eatApple() {
 }
 
 function growSnake(growth) {
-  score.innerText = parseInt(score.innerText) + growth;
+  incrementScore(growth);
   snake.length += growth;
+}
+
+function incrementScore(growth) {
+  score.innerText = parseInt(score.innerText) + growth;
 }
 
 //change game speed according to difficulty
@@ -292,5 +310,12 @@ function checkColision() {
     snake.positions.lastIndexOf(snake.head)
   ) {
     restart();
+  }
+}
+
+function fullGrid() {
+  if (snake.allPositions.length == 1200) {
+    snake.gridIsFull = true;
+    incrementScore(100);
   }
 }
