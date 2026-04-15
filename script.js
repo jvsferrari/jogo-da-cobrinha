@@ -1,8 +1,8 @@
-//declare HTML references
+//declare outside references
 const start = document.querySelector('#start');
 const menu = document.querySelector('#menu');
 const musicIcon = document.querySelector('#musicIcon');
-const musicFile = new Audio('./19 Aviary Action.mp3');
+const musicFile = new Audio('./749455__nathanj848__underground-song-2.wav');
 const musicButton = document.querySelector('#musicButton');
 const returnButton = document.querySelector('#return');
 const gamePage = document.querySelector('#game');
@@ -12,6 +12,9 @@ const lastKey = document.querySelector('#lastKey');
 const difficultyButton = document.querySelector('#difficultyButton');
 const difficultyDisplay = document.querySelector('#difficulty');
 const maxScore = document.querySelector('#maxScore');
+const tryAgain = document.querySelector('#tryAgain');
+const gameOverScore = document.querySelector('#gameOverScore');
+const gameOverPopUp = document.querySelector('#gameOverPopUp');
 
 //make 30x30 grid
 function makeGrid() {
@@ -40,6 +43,7 @@ returnButton.addEventListener('click', returnToMenu);
 musicButton.addEventListener('click', toggleMusic);
 restartButton.addEventListener('click', restart);
 difficultyButton.addEventListener('click', changeDifficulty);
+tryAgain.addEventListener('click', restart);
 
 //music
 musicFile.loop = true;
@@ -55,6 +59,8 @@ function toggleMusic() {
 
 function restart() {
   document.getElementById('game').removeChild(gridContainer);
+  gameOverPopUp.style.display = 'none';
+  checkDifficulty();
   startGame();
 }
 
@@ -117,6 +123,7 @@ function beat() {
     pulse = setInterval(() => {
       eatApple();
       moveSnake(snake.direction);
+      checkColision();
       drawSnake();
       snake.hasChangedDirection = false;
       //erase duplicates
@@ -203,7 +210,6 @@ function moveSnake(direction) {
   snake.allPositions.push(snake.head);
   eraseTail();
   console.log(snake.positions);
-  checkColision();
 }
 
 function drawSnake() {
@@ -296,6 +302,9 @@ function changeDifficulty() {
   }
   difficultyDisplay.innerText = difficulty;
 
+  checkDifficulty();
+}
+function checkDifficulty() {
   switch (difficulty) {
     case 'Normal':
       pulseFrequency = 500;
@@ -308,20 +317,28 @@ function changeDifficulty() {
       break;
   }
 }
-
 //check if the snake's head has hit its body
 function checkColision() {
   if (
     snake.positions.indexOf(snake.head) !=
     snake.positions.lastIndexOf(snake.head)
   ) {
-    restart();
+    gameOver();
   }
 }
 
+//full grid bonus
 function fullGrid() {
   if (snake.allPositions.length == 1200) {
     snake.gridIsFull = true;
     incrementScore(100);
   }
 }
+
+function gameOver() {
+  gameOverScore.innerText = score.innerText;
+  gameOverPopUp.style.display = 'flex';
+  clearInterval(pulse);
+}
+
+//adicionar cobra com 1200 de length (win)

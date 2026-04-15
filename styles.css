@@ -1,5 +1,6 @@
 * {
   font-family: Arial, Helvetica, sans-serif;
+  text-align: center;
 }
 
 #menu,
@@ -8,127 +9,178 @@ body {
   height: 100dvh;
   width: 100dvw;
   margin: 0;
-  background-color: #2E7D32;
+  background-color: #2e7d32;
 }
 
-#menu{
-  background-color: #9ED3DC;
-  display:flex;
-  flex-direction:column;
-  justify-content:space-evenly;
+#menu {
+  background-color: #9ed3dc;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
 }
 
-h1{
+h1 {
   font-size: 100px;
-  margin: 60px
+  margin: 60px;
 }
 
-h2{
+h2 {
   font-size: 20px;
   margin: 0;
 }
 
-h1, h2 {
-  color: #1A4A5A;
-  text-align:center;
+h3 {
+  font-size: 15px;
+  margin: 10px;
 }
 
-.buttons{
-  display:flex;
-  justify-content:space-evenly;
+h1,
+h2,
+h3 a {
+  color: #1a4a5a;
+  text-align: center;
 }
 
-#game .buttons{
-  flex-direction:column;
+.buttons {
+  display: flex;
+  justify-content: space-evenly;
+}
+
+#game .buttons {
+  flex-direction: column;
 }
 
 #menu button,
-#menu p{  
-  font-size:40px;
+#menu p {
+  font-size: 40px;
   padding: 20px;
   border-radius: 30px;
-  color: #1A4A5A;
-  background-color: #FEFD99;
+  color: #1a4a5a;
+  background-color: #fefd99;
 }
 
 #game button,
-#game p{  
-  font-size:20px;
+#game p {
+  font-size: 20px;
   padding: 15px;
   border-radius: 20px;
-  color:#FEFD99;
-  background-color: #1A4A5A;
+  color: #fefd99;
+  background-color: #1a4a5a;
 }
 
 button,
-p{
+p {
   background-color: white;
   margin: 0;
-  border:0;
+  border: 0;
   display: flex;
-  justify-content:center;
-  align-items:center
+  justify-content: center;
+  align-items: center;
 }
 
-button{
-  cursor:pointer;
+button {
+  cursor: pointer;
 }
 
-.compoundButton{
-  display:flex;
-  flex-direction:column;
+.compoundButton {
+  display: flex;
+  flex-direction: column;
 }
 
-#game .compoundButton p{
+#game .compoundButton p {
   border-radius: 0 0 15px 15px;
 }
 
-#menu .compoundButton p{
+#menu .compoundButton p {
   border-radius: 0 0 30px 30px;
 }
 
-#game .compoundButton button{
+#game .compoundButton button {
   border-radius: 15px 15px 0 0;
+  cursor: default;
 }
 
-#menu .compoundButton button{
+#menu .compoundButton button {
   border-radius: 30px 30px 0 0;
 }
 
-
-#game{
-  display:none;
-  justify-content:space-evenly;
-  height:100vh;
+#game {
+  display: none;
+  justify-content: space-evenly;
+  height: 100vh;
 }
 
-.pixel{
-  background-color: #91E07B;
-  height:3vh;
+.pixel {
+  background-color: #91e07b;
+  height: 3vh;
   width: 3vh;
 }
 
-.row{
+.row {
   display: flex;
-  justify-content:center;
+  justify-content: center;
 }
 
-#gridContainer{
-  justify-content:center;
+#gridContainer {
+  justify-content: center;
 }
 
-.r1.pixel{
-  border-top:5px solid #2C2C2C
+.r1.pixel {
+  border-top: 5px solid #2c2c2c;
 }
 
-.r30.pixel{
-  border-bottom:5px solid #2C2C2C
+.r30.pixel {
+  border-bottom: 5px solid #2c2c2c;
 }
 
-.c1.pixel{
-  border-left:5px solid #2C2C2C
+.c1.pixel {
+  border-left: 5px solid #2c2c2c;
 }
 
-.c40.pixel{
-  border-right:5px solid #2C2C2C
+.c40.pixel {
+  border-right: 5px solid #2c2c2c;
+}
+
+#gameOverPopUp {
+  border-radius: 30px;
+  background-color: #2c2c2c;
+  color: #2c2c2c;
+  position: fixed;
+  margin: auto;
+  height: 60vh;
+  width: 50vw;
+  inset: 0;
+  display: none;
+  justify-content: space-around;
+  align-items: center;
+  flex-direction: column;
+  padding: 25px;
+  border: #1a4a5a 7px solid;
+}
+
+#gameOverPopUp .buttons {
+  gap: 10%;
+}
+
+#gameOverPopUp p,
+#gameOverPopUp button {
+  background-color: #1a4a5a;
+  color: #fefd99;
+  border-radius: 20px;
+  font-size: 50px;
+  padding: 10px;
+}
+
+#gameOverPopUp button {
+  font-size: 30px;
+}
+
+#gameOverPopUp .compoundButton p {
+  border-radius: 0 0 20px 20px;
+  font-size: 30px;
+}
+
+#gameOverPopUp .compoundButton button {
+  border-radius: 20px 20px 0 0;
+  font-size: 30px;
 }
