@@ -42,16 +42,29 @@
         </h3>
       </div>
     </div>
-    <div id="gameOverPopUp">
+
+    <div id="gameOverPopUp" class="popUp">
       <p>Fim do jogo!</p>
       <div class="buttons">
         <div class="compoundButton">
           <button>Sua pontuação</button>
-          <p id="gameOverScore">0</p>
+          <p class="currentScore">0</p>
         </div>
-        <button id="tryAgain">Tentar novamente</button>
+        <button class="tryAgain">Tentar novamente</button>
       </div>
     </div>
+
+    <div id="winPopUp" class="popUp">
+      <p>Você venceu, parabéns!</p>
+      <div class="buttons">
+        <div class="compoundButton">
+          <button>Sua pontuação</button>
+          <p id="winScore" class="currentScore">0</p>
+        </div>
+        <button class="tryAgain">Tentar novamente</button>
+      </div>
+    </div>
+
     <div id="game">
       <div class="buttons">
         <div class="compoundButton">
@@ -60,7 +73,7 @@
         </div>
         <div class="compoundButton">
           <button id="scoreboard">Pontuação</button>
-          <p id="score">0</p>
+          <p id="score" class="currentScore">0</p>
         </div>
         <button id="restart">Reiniciar</button>
         <button id="return">Retornar ao menu</button>

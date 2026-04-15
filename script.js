@@ -7,14 +7,15 @@ const musicButton = document.querySelector('#musicButton');
 const returnButton = document.querySelector('#return');
 const gamePage = document.querySelector('#game');
 const restartButton = document.querySelector('#restart');
-const score = document.querySelector('#score');
 const lastKey = document.querySelector('#lastKey');
 const difficultyButton = document.querySelector('#difficultyButton');
 const difficultyDisplay = document.querySelector('#difficulty');
 const maxScore = document.querySelector('#maxScore');
-const tryAgain = document.querySelector('#tryAgain');
-const gameOverScore = document.querySelector('#gameOverScore');
+const tryAgain = document.querySelectorAll('.tryAgain');
 const gameOverPopUp = document.querySelector('#gameOverPopUp');
+const winPopUp = document.querySelector('#winPopUp');
+const popUp = document.querySelectorAll('.popUp');
+const scoreboards = document.querySelectorAll('.currentScore');
 
 //make 30x30 grid
 function makeGrid() {
@@ -43,7 +44,9 @@ returnButton.addEventListener('click', returnToMenu);
 musicButton.addEventListener('click', toggleMusic);
 restartButton.addEventListener('click', restart);
 difficultyButton.addEventListener('click', changeDifficulty);
-tryAgain.addEventListener('click', restart);
+tryAgain.forEach((button) => {
+  button.addEventListener('click', restart);
+});
 
 //music
 musicFile.loop = true;
@@ -59,7 +62,9 @@ function toggleMusic() {
 
 function restart() {
   document.getElementById('game').removeChild(gridContainer);
-  gameOverPopUp.style.display = 'none';
+  popUp.forEach((element) => (element.style.display = 'none'));
+  snake.direction = 'up';
+  lastKey.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
   checkDifficulty();
   startGame();
 }
@@ -110,7 +115,7 @@ function startGame() {
   snake.positions.length = 0;
   snake.length = 2;
   startSnake();
-  console.log(snake.positions);
+  //console.log(snake.positions);
   drawSnake();
   generateApple();
   beat();
@@ -123,13 +128,14 @@ function beat() {
     pulse = setInterval(() => {
       eatApple();
       moveSnake(snake.direction);
+      win();
       checkColision();
       drawSnake();
       snake.hasChangedDirection = false;
       //erase duplicates
       snake.allPositions = [...new Set(snake.allPositions)];
-      console.log(`snake.allPositions.length: ${snake.allPositions.length}`);
-      console.log(snake.allPositions);
+      //console.log(`snake.allPositions.length: ${snake.allPositions.length}`);
+      //console.log(snake.allPositions);
       if (snake.gridIsFull == false) {
         fullGrid();
       }
@@ -142,7 +148,7 @@ function startSnake() {
   //safe 5-pixel margin
   snake.row = Math.floor(Math.random() * 20 + 5);
   snake.column = Math.floor(Math.random() * 30 + 5);
-  console.log(snake.row, snake.column);
+  //console.log(snake.row, snake.column);
   snake.head = document.querySelector(`.r${snake.row}.c${snake.column}`);
   tail = document.querySelector(`.r${snake.row + 1}.c${snake.column}`);
   snake.allPositions.push(tail);
@@ -151,7 +157,7 @@ function startSnake() {
   snake.positions.push(snake.head);
 }
 
-//arrow keypresses
+//arrow keypresses*
 window.addEventListener('keydown', (event) => {
   //avoid changing direction more than once per pulse
   if (snake.hasChangedDirection == false) {
@@ -203,18 +209,20 @@ function moveSnake(direction) {
       break;
   }
   overflow();
-  console.log(`Snake row:${snake.row}\nSnake column:${snake.column}`);
+  //console.log(`Snake row:${snake.row}\nSnake column:${snake.column}`);
   snake.head = document.querySelector(`.r${snake.row}.c${snake.column}`);
   //pushes the new position and then splices the old
   snake.positions.push(snake.head);
   snake.allPositions.push(snake.head);
   eraseTail();
-  console.log(snake.positions);
+  //console.log(snake.positions);
 }
 
 function drawSnake() {
   for (let i = 0; i < snake.length; i++) {
-    snake.positions[i].style.backgroundColor = '#FCB7C7';
+    if (snake.positions.length > i) {
+      snake.positions[i].style.backgroundColor = '#FCB7C7';
+    }
   }
   snake.positions[snake.positions.length - 1].style.backgroundColor = '#CA6180';
 }
@@ -243,24 +251,26 @@ function overflow() {
 }
 
 function resetScore() {
-  score.innerText = '0';
+  scoreboards.forEach((scoreboard) => {
+    scoreboard.innerText = '0';
+  });
 }
 
 //generate and draw apple at least 3 pixels away from head and only where there is no snake body
 function generateApple() {
-  apple.row = Math.floor(Math.random() * 20 + 5);
-  apple.column = Math.floor(Math.random() * 30 + 5);
+  apple.row = Math.floor(Math.random() * 29 + 1);
+  apple.column = Math.floor(Math.random() * 39 + 1);
   apple.pixel = document.querySelector(`.r${apple.row}.c${apple.column}`);
   while (
     Math.abs(apple.row - snake.row) < 3 ||
     Math.abs(apple.column - snake.column) < 3 ||
     snake.positions.includes(apple.pixel)
   ) {
-    apple.row = Math.floor(Math.random() * 20 + 5);
-    apple.column = Math.floor(Math.random() * 30 + 5);
+    apple.row = Math.floor(Math.random() * 30);
+    apple.column = Math.floor(Math.random() * 40);
     apple.pixel = document.querySelector(`.r${apple.row}.c${apple.column}`);
   }
-  console.log(`Apple row: ${apple.row}\nApple column: ${apple.column}`);
+  //console.log(`Apple row: ${apple.row}\nApple column: ${apple.column}`);
   apple.pixel = document.querySelector(`.r${apple.row}.c${apple.column}`);
   apple.pixel.style.backgroundColor = 'red';
 }
@@ -285,9 +295,12 @@ function growSnake(growth) {
 }
 
 function incrementScore(growth) {
-  score.innerText = parseInt(score.innerText) + growth;
-  if (parseInt(maxScore.innerText) < parseInt(score.innerText)) {
-    maxScore.innerText = parseInt(maxScore.innerText) + 1;
+  scoreboards.forEach(
+    (scoreboard) =>
+      (scoreboard.innerText = parseInt(scoreboard.innerText) + growth),
+  );
+  if (parseInt(maxScore.innerText) < parseInt(scoreboards[1].innerText)) {
+    maxScore.innerText = parseInt(maxScore.innerText) + growth;
   }
 }
 
@@ -336,9 +349,15 @@ function fullGrid() {
 }
 
 function gameOver() {
-  gameOverScore.innerText = score.innerText;
+  //gameOverScore.innerText = score.innerText;
   gameOverPopUp.style.display = 'flex';
   clearInterval(pulse);
 }
 
 //adicionar cobra com 1200 de length (win)
+function win() {
+  if (snake.length == 1200) {
+    winPopUp.style.display = 'flex';
+    clearInterval(pulse);
+  }
+}
