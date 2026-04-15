@@ -95,7 +95,7 @@ let tail = document.querySelector(`.r${snake.row + 1}.c${snake.column}`);
 let pulse;
 let oldTail = '';
 let difficulty = 'Normal';
-let pulseFrequency = 500;
+let pulseTiming = 500;
 let gridContainer;
 
 //exit menu, create 2 pixel snake, create grid(if it does noot exist), reset score, positions and snake.length, start and draw snake and apple, start pulsing
@@ -118,7 +118,7 @@ function startGame() {
 
 //pulses moving snake and checking if apple was eaten, calls itself
 function beat() {
-  if (pulseFrequency >= 50) {
+  if (pulseTiming >= 50) {
     clearInterval(pulse);
     pulse = setInterval(() => {
       eatApple();
@@ -134,7 +134,7 @@ function beat() {
         fullGrid();
       }
       beat();
-    }, pulseFrequency);
+    }, pulseTiming);
   }
 }
 //start snake and push first and second positions' values
@@ -275,7 +275,7 @@ function eatApple() {
   if (snake.head.classList == apple.pixel.classList) {
     growSnake(1);
     generateApple();
-    pulseFrequency -= 20;
+    pulseTiming -= 20;
   }
 }
 
@@ -307,13 +307,13 @@ function changeDifficulty() {
 function checkDifficulty() {
   switch (difficulty) {
     case 'Normal':
-      pulseFrequency = 500;
+      pulseTiming = 500;
       break;
     case 'Fácil':
-      pulseFrequency = 700;
+      pulseTiming = 700;
       break;
     case 'Difícil':
-      pulseFrequency = 300;
+      pulseTiming = 300;
       break;
   }
 }
