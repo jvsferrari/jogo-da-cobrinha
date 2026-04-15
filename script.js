@@ -11,7 +11,7 @@ const score = document.querySelector('#score');
 const lastKey = document.querySelector('#lastKey');
 const difficultyButton = document.querySelector('#difficultyButton');
 const difficultyDisplay = document.querySelector('#difficulty');
-let gridContainer;
+const maxScore = document.querySelector('#maxScore');
 
 //make 30x30 grid
 function makeGrid() {
@@ -90,6 +90,7 @@ let pulse;
 let oldTail = '';
 let difficulty = 'Normal';
 let pulseFrequency = 500;
+let gridContainer;
 
 //exit menu, create 2 pixel snake, create grid(if it does noot exist), reset score, positions and snake.length, start and draw snake and apple, start pulsing
 function startGame() {
@@ -279,6 +280,9 @@ function growSnake(growth) {
 
 function incrementScore(growth) {
   score.innerText = parseInt(score.innerText) + growth;
+  if (parseInt(maxScore.innerText) < parseInt(score.innerText)) {
+    maxScore.innerText = parseInt(maxScore.innerText) + 1;
+  }
 }
 
 //change game speed according to difficulty
@@ -292,14 +296,16 @@ function changeDifficulty() {
   }
   difficultyDisplay.innerText = difficulty;
 
-  if (difficulty == 'Normal') {
-    pulseFrequency = 500;
-  }
-  if (difficulty == 'Fácil') {
-    pulseFrequency = 700;
-  }
-  if (difficulty == 'Difícil') {
-    pulseFrequency = 300;
+  switch (difficulty) {
+    case 'Normal':
+      pulseFrequency = 500;
+      break;
+    case 'Fácil':
+      pulseFrequency = 700;
+      break;
+    case 'Difícil':
+      pulseFrequency = 300;
+      break;
   }
 }
 
