@@ -19,6 +19,92 @@ const scoreboards = document.querySelectorAll('.currentScore');
 const overflowIcon = document.querySelector('#overflowIcon');
 const overflowButton = document.querySelector('#overflowButton');
 
+//starting definitions
+//snake object
+let snake = {
+  positions: [],
+  length: 2,
+  head: '',
+  row: 1,
+  column: 1,
+  direction: 'up',
+  hasChangedDirection: false,
+  allPositions: [],
+  gridIsFull: false,
+};
+//apple object
+let apple = {
+  row: 1,
+  column: 1,
+  pixel: '',
+};
+snake.head = document.querySelector(`.r${snake.row}.c${snake.column}`);
+let tail = document.querySelector(`.r${snake.row + 1}.c${snake.column}`);
+let pulse;
+let oldTail = '';
+let difficulty = 'Normal';
+let pulseTiming = 500;
+let gridContainer;
+let gridOverflow = false;
+
+//configure event listeners
+start.addEventListener('click', startGame);
+returnButton.addEventListener('click', returnToMenu);
+musicButton.addEventListener('click', toggleMusic);
+restartButton.addEventListener('click', restart);
+difficultyButton.addEventListener('click', changeDifficulty);
+tryAgain.forEach((button) => {
+  button.addEventListener('click', restart);
+});
+overflowButton.addEventListener('click', cycleOverflow);
+
+//arrow keypresses*
+window.addEventListener('keydown', (event) => {
+  //avoid changing direction more than once per pulse
+  if (snake.hasChangedDirection == false) {
+    switch (event.key) {
+      case 'ArrowUp':
+        if (snake.direction != 'down') {
+          lastKey.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
+          snake.direction = 'up';
+        }
+        break;
+      case 'ArrowDown':
+        if (snake.direction != 'up') {
+          lastKey.innerHTML = '<i class="fa-solid fa-arrow-down"></i>';
+          snake.direction = 'down';
+        }
+        break;
+
+      case 'ArrowLeft':
+        if (snake.direction != 'right') {
+          lastKey.innerHTML = '<i class="fa-solid fa-arrow-left"></i>';
+          snake.direction = 'left';
+        }
+        break;
+      case 'ArrowRight':
+        if (snake.direction != 'left') {
+          lastKey.innerHTML = '<i class="fa-solid fa-arrow-right"></i>';
+          snake.direction = 'right';
+        }
+        break;
+    }
+    snake.hasChangedDirection = true;
+  }
+});
+
+//music
+musicFile.loop = true;
+function toggleMusic() {
+  if (musicFile.paused) {
+    musicFile.play();
+    musicIcon.innerHTML = '<i class="fa-solid fa-volume"></i>';
+  } else {
+    musicFile.pause();
+    musicIcon.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
+  }
+}
+
 //make 30x30 grid
 function makeGrid() {
   gridContainer = document.createElement('div');
@@ -47,29 +133,6 @@ function makeGrid() {
   }
 }
 
-//configure event listeners
-start.addEventListener('click', startGame);
-returnButton.addEventListener('click', returnToMenu);
-musicButton.addEventListener('click', toggleMusic);
-restartButton.addEventListener('click', restart);
-difficultyButton.addEventListener('click', changeDifficulty);
-tryAgain.forEach((button) => {
-  button.addEventListener('click', restart);
-});
-overflowButton.addEventListener('click', cycleOverflow);
-
-//music
-musicFile.loop = true;
-function toggleMusic() {
-  if (musicFile.paused) {
-    musicFile.play();
-    musicIcon.innerHTML = '<i class="fa-solid fa-volume"></i>';
-  } else {
-    musicFile.pause();
-    musicIcon.innerHTML = '<i class="fa-solid fa-volume-xmark"></i>';
-  }
-}
-
 function restart() {
   document.getElementById('game').removeChild(gridContainer);
   popUp.forEach((element) => (element.style.display = 'none'));
@@ -85,34 +148,6 @@ function returnToMenu() {
   document.getElementById('game').removeChild(gridContainer);
   clearInterval(pulse);
 }
-
-//starting definitions
-//snake object
-let snake = {
-  positions: [],
-  length: 2,
-  head: '',
-  row: 1,
-  column: 1,
-  direction: 'up',
-  hasChangedDirection: false,
-  allPositions: [],
-  gridIsFull: false,
-};
-//apple object
-let apple = {
-  row: 1,
-  column: 1,
-  pixel: '',
-};
-snake.head = document.querySelector(`.r${snake.row}.c${snake.column}`);
-let tail = document.querySelector(`.r${snake.row + 1}.c${snake.column}`);
-let pulse;
-let oldTail = '';
-let difficulty = 'Normal';
-let pulseTiming = 500;
-let gridContainer;
-let gridOverflow = false;
 
 //exit menu, create 2 pixel snake, create grid(if it does noot exist), reset score, positions and snake.length, start and draw snake and apple, start pulsing
 function startGame() {
@@ -154,6 +189,7 @@ function beat() {
     }, pulseTiming);
   }
 }
+
 //start snake and push first and second positions' values
 function startSnake() {
   //safe 5-pixel margin
@@ -167,41 +203,6 @@ function startSnake() {
   snake.positions.push(tail);
   snake.positions.push(snake.head);
 }
-
-//arrow keypresses*
-window.addEventListener('keydown', (event) => {
-  //avoid changing direction more than once per pulse
-  if (snake.hasChangedDirection == false) {
-    switch (event.key) {
-      case 'ArrowUp':
-        if (snake.direction != 'down') {
-          lastKey.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
-          snake.direction = 'up';
-        }
-        break;
-      case 'ArrowDown':
-        if (snake.direction != 'up') {
-          lastKey.innerHTML = '<i class="fa-solid fa-arrow-down"></i>';
-          snake.direction = 'down';
-        }
-        break;
-
-      case 'ArrowLeft':
-        if (snake.direction != 'right') {
-          lastKey.innerHTML = '<i class="fa-solid fa-arrow-left"></i>';
-          snake.direction = 'left';
-        }
-        break;
-      case 'ArrowRight':
-        if (snake.direction != 'left') {
-          lastKey.innerHTML = '<i class="fa-solid fa-arrow-right"></i>';
-          snake.direction = 'right';
-        }
-        break;
-    }
-    snake.hasChangedDirection = true;
-  }
-});
 
 //move snake according to direction and erase tail
 function moveSnake(direction) {
@@ -343,6 +344,7 @@ function changeDifficulty() {
 
   checkDifficulty();
 }
+
 function checkDifficulty() {
   switch (difficulty) {
     case 'Normal':
@@ -356,6 +358,7 @@ function checkDifficulty() {
       break;
   }
 }
+
 //check if the snake's head has hit its body
 function checkColision() {
   if (
