@@ -16,6 +16,8 @@ const gameOverPopUp = document.querySelector('#gameOverPopUp');
 const winPopUp = document.querySelector('#winPopUp');
 const popUp = document.querySelectorAll('.popUp');
 const scoreboards = document.querySelectorAll('.currentScore');
+const overflowIcon = document.querySelector('#overflowIcon');
+const overflowButton = document.querySelector('#overflowButton');
 
 //make 30x30 grid
 function makeGrid() {
@@ -33,8 +35,15 @@ function makeGrid() {
       newDiv.classList.add(`r${row}`, `c${column}`, 'pixel');
       newRow.appendChild(newDiv);
     }
+
     gamePage.prepend(gridContainer);
     gridContainer.appendChild(newRow);
+  }
+  const pixels = document.querySelectorAll('.pixel');
+  if (gridOverflow == true) {
+    pixels.forEach((pixel) => {
+      pixel.style.border = '0';
+    });
   }
 }
 
@@ -47,6 +56,7 @@ difficultyButton.addEventListener('click', changeDifficulty);
 tryAgain.forEach((button) => {
   button.addEventListener('click', restart);
 });
+overflowButton.addEventListener('click', cycleOverflow);
 
 //music
 musicFile.loop = true;
@@ -102,6 +112,7 @@ let oldTail = '';
 let difficulty = 'Normal';
 let pulseTiming = 500;
 let gridContainer;
+let gridOverflow = false;
 
 //exit menu, create 2 pixel snake, create grid(if it does noot exist), reset score, positions and snake.length, start and draw snake and apple, start pulsing
 function startGame() {
@@ -230,23 +241,38 @@ function drawSnake() {
 function eraseTail() {
   oldTail = snake.positions.splice(0, snake.positions.length - snake.length);
   for (let i = oldTail.length; i > 0; i--) {
-    oldTail[i - 1].style.backgroundColor = '#2E7D32';
+    oldTail[i - 1].style.backgroundColor = '#74e17a';
   }
 }
 
 //check if snake has hit a border
 function overflow() {
-  if (snake.row > 30 && snake.direction == 'down') {
-    snake.row = 1;
-  }
-  if (snake.row < 1 && snake.direction == 'up') {
-    snake.row = 30;
-  }
-  if (snake.column > 40 && snake.direction == 'right') {
-    snake.column = 1;
-  }
-  if (snake.column < 1 && snake.direction == 'left') {
-    snake.column = 40;
+  if (gridOverflow) {
+    if (snake.row > 30 && snake.direction == 'down') {
+      snake.row = 1;
+    }
+    if (snake.row < 1 && snake.direction == 'up') {
+      snake.row = 30;
+    }
+    if (snake.column > 40 && snake.direction == 'right') {
+      snake.column = 1;
+    }
+    if (snake.column < 1 && snake.direction == 'left') {
+      snake.column = 40;
+    }
+  } else {
+    if (snake.row > 30 && snake.direction == 'down') {
+      gameOver();
+    }
+    if (snake.row < 1 && snake.direction == 'up') {
+      gameOver();
+    }
+    if (snake.column > 40 && snake.direction == 'right') {
+      gameOver();
+    }
+    if (snake.column < 1 && snake.direction == 'left') {
+      gameOver();
+    }
   }
 }
 
@@ -258,16 +284,16 @@ function resetScore() {
 
 //generate and draw apple at least 3 pixels away from head and only where there is no snake body
 function generateApple() {
-  apple.row = Math.floor(Math.random() * 29 + 1);
-  apple.column = Math.floor(Math.random() * 39 + 1);
+  apple.row = Math.floor(Math.random() * 24 + 1);
+  apple.column = Math.floor(Math.random() * 34 + 1);
   apple.pixel = document.querySelector(`.r${apple.row}.c${apple.column}`);
   while (
     Math.abs(apple.row - snake.row) < 3 ||
     Math.abs(apple.column - snake.column) < 3 ||
     snake.positions.includes(apple.pixel)
   ) {
-    apple.row = Math.floor(Math.random() * 30);
-    apple.column = Math.floor(Math.random() * 40);
+    apple.row = Math.floor(Math.random() * 24 + 1);
+    apple.column = Math.floor(Math.random() * 34 + 1);
     apple.pixel = document.querySelector(`.r${apple.row}.c${apple.column}`);
   }
   //console.log(`Apple row: ${apple.row}\nApple column: ${apple.column}`);
@@ -359,5 +385,18 @@ function win() {
   if (snake.length == 1200) {
     winPopUp.style.display = 'flex';
     clearInterval(pulse);
+  }
+}
+
+function cycleOverflow() {
+  switch (gridOverflow) {
+    case true:
+      gridOverflow = false;
+      overflowIcon.innerHTML = '<i class="fa-regular fa-circle-check"></i>';
+      break;
+    case false:
+      gridOverflow = true;
+      overflowIcon.innerHTML = '<i class="fa-regular fa-circle"></i>';
+      break;
   }
 }
