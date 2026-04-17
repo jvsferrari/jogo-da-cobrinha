@@ -18,6 +18,8 @@ const popUp = document.querySelectorAll('.popUp');
 const scoreboards = document.querySelectorAll('.currentScore');
 const overflowIcon = document.querySelector('#overflowIcon');
 const overflowButton = document.querySelector('#overflowButton');
+const pauseButton = document.querySelector('#pause');
+const gameContainer = document.getElementById('game');
 
 //starting definitions
 //snake object
@@ -46,6 +48,7 @@ let difficulty = 'Normal';
 let pulseTiming = 500;
 let gridContainer;
 let gridOverflow = false;
+let isPaused = false;
 
 //configure event listeners
 start.addEventListener('click', startGame);
@@ -57,6 +60,7 @@ tryAgain.forEach((button) => {
   button.addEventListener('click', restart);
 });
 overflowButton.addEventListener('click', cycleOverflow);
+pauseButton.addEventListener('click', cyclePause);
 
 //arrow keypresses*
 window.addEventListener('keydown', (event) => {
@@ -134,18 +138,22 @@ function makeGrid() {
 }
 
 function restart() {
-  document.getElementById('game').removeChild(gridContainer);
+  if (gameContainer.contains(gridContainer)) {
+    gameContainer.removeChild(gridContainer);
+  }
   popUp.forEach((element) => (element.style.display = 'none'));
   snake.direction = 'up';
   lastKey.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
   checkDifficulty();
   startGame();
+  isPaused = true;
+  cyclePause();
 }
 
 function returnToMenu() {
   gamePage.style.display = 'none';
   document.querySelector('body').prepend(menu);
-  document.getElementById('game').removeChild(gridContainer);
+  gameContainer.removeChild(gridContainer);
   clearInterval(pulse);
 }
 
@@ -160,6 +168,8 @@ function startGame() {
   snake.allPositions.length = 0;
   snake.positions.length = 0;
   snake.length = 2;
+  snake.direction = 'up';
+  lastKey.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
   startSnake();
   //console.log(snake.positions);
   drawSnake();
@@ -175,7 +185,7 @@ function beat() {
       eatApple();
       moveSnake(snake.direction);
       win();
-      checkColision();
+
       drawSnake();
       snake.hasChangedDirection = false;
       //erase duplicates
@@ -186,6 +196,7 @@ function beat() {
         fullGrid();
       }
       beat();
+      checkColision();
     }, pulseTiming);
   }
 }
@@ -400,6 +411,21 @@ function cycleOverflow() {
     case false:
       gridOverflow = true;
       overflowIcon.innerHTML = '<i class="fa-regular fa-circle"></i>';
+      break;
+  }
+}
+
+function cyclePause() {
+  switch (isPaused) {
+    case false:
+      clearInterval(pulse);
+      pauseButton.innerHTML = '<i class="fa-solid fa-play"></i>';
+      isPaused = true;
+      break;
+    case true:
+      pauseButton.innerHTML = '<i class="fa-solid fa-pause"></i>';
+      beat();
+      isPaused = false;
       break;
   }
 }
