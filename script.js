@@ -39,7 +39,20 @@ let apple = {
   row: 1,
   column: 1,
   pixel: '',
+  points: 1,
+  speed: -20,
+  count: 0,
 };
+
+let bonus = {
+  pixel: '',
+  speed: 0,
+  points: 0,
+  positions: [],
+  wasEaten: true,
+  wasGenerated: false,
+};
+
 snake.head = document.querySelector(`.r${snake.row}.c${snake.column}`);
 let tail = document.querySelector(`.r${snake.row + 1}.c${snake.column}`);
 let pulse;
@@ -50,7 +63,7 @@ let gridContainer;
 let gridOverflow = false;
 let isPaused = false;
 
-//configure event listeners
+//setup event listeners
 start.addEventListener('click', startGame);
 returnButton.addEventListener('click', returnToMenu);
 musicButton.addEventListener('click', toggleMusic);
@@ -135,6 +148,12 @@ function makeGrid() {
       pixel.style.border = '0';
     });
   }
+  bonus.positions = [
+    document.querySelector('.r1.c1'),
+    document.querySelector('.r1.c40'),
+    document.querySelector('.r30.c1'),
+    document.querySelector('.r30.c40'),
+  ];
 }
 
 function restart() {
@@ -169,6 +188,8 @@ function startGame() {
   snake.positions.length = 0;
   snake.length = 2;
   snake.direction = 'up';
+  apple.count = 0;
+  bonus.wasEaten = true;
   lastKey.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
   startSnake();
   //console.log(snake.positions);
@@ -179,26 +200,25 @@ function startGame() {
 
 //pulses moving snake and checking if apple was eaten, calls itself
 function beat() {
-  if (pulseTiming >= 50) {
-    clearInterval(pulse);
-    pulse = setInterval(() => {
-      eatApple();
-      moveSnake(snake.direction);
-      win();
+  clearInterval(pulse);
+  pulse = setInterval(() => {
+    eat(apple);
+    eat(bonus);
+    moveSnake(snake.direction);
+    win();
 
-      drawSnake();
-      snake.hasChangedDirection = false;
-      //erase duplicates
-      snake.allPositions = [...new Set(snake.allPositions)];
-      //console.log(`snake.allPositions.length: ${snake.allPositions.length}`);
-      //console.log(snake.allPositions);
-      if (snake.gridIsFull == false) {
-        fullGrid();
-      }
-      beat();
-      checkColision();
-    }, pulseTiming);
-  }
+    drawSnake();
+    snake.hasChangedDirection = false;
+    //erase duplicates
+    snake.allPositions = [...new Set(snake.allPositions)];
+    //console.log(`snake.allPositions.length: ${snake.allPositions.length}`);
+    //console.log(snake.allPositions);
+    if (snake.gridIsFull == false) {
+      fullGrid();
+    }
+    beat();
+    checkColision();
+  }, pulseTiming);
 }
 
 //start snake and push first and second positions' values
@@ -296,40 +316,47 @@ function resetScore() {
 
 //generate and draw apple at least 3 pixels away from head and only where there is no snake body
 function generateApple() {
-  apple.row = Math.floor(Math.random() * 24 + 1);
-  apple.column = Math.floor(Math.random() * 34 + 1);
-  apple.pixel = document.querySelector(`.r${apple.row}.c${apple.column}`);
-  while (
-    Math.abs(apple.row - snake.row) < 3 ||
-    Math.abs(apple.column - snake.column) < 3 ||
-    snake.positions.includes(apple.pixel)
-  ) {
+  bonus.wasGenerated = false;
+  apple.count++;
+  do {
     apple.row = Math.floor(Math.random() * 24 + 1);
     apple.column = Math.floor(Math.random() * 34 + 1);
     apple.pixel = document.querySelector(`.r${apple.row}.c${apple.column}`);
-  }
+  } while (
+    Math.abs(apple.row - snake.row) < 3 ||
+    Math.abs(apple.column - snake.column) < 3 ||
+    snake.positions.includes(apple.pixel)
+  );
   //console.log(`Apple row: ${apple.row}\nApple column: ${apple.column}`);
   apple.pixel = document.querySelector(`.r${apple.row}.c${apple.column}`);
   apple.pixel.style.backgroundColor = 'red';
 }
 
 //check if apple was eaten; increase score, generate apple and speed up the game if the apple was eaten
+/*
 function eatApple() {
-  /*
-  console.log(
-    `snake.head${snake.head.classList}\napple.pixel${apple.pixel.classList}`,
-  );
-  */
   if (snake.head.classList == apple.pixel.classList) {
     growSnake(1);
     generateApple();
-    pulseTiming -= 20;
+    if (pulseTiming >= 50) {
+      pulseTiming -= 20;
+    }
   }
 }
+*/
 
 function growSnake(growth) {
-  incrementScore(growth);
-  snake.length += growth;
+  if (growth < -parseInt(scoreboards[0].innerText)) {
+    incrementScore(-parseInt(scoreboards[0].innerText));
+    if (snake.length + growth < 2) {
+      snake.length = 2;
+    } else snake.length += -parseInt(scoreboards[0].innerText);
+  } else {
+    incrementScore(growth);
+    if (snake.length + growth < 2) {
+      snake.length = 2;
+    } else snake.length += growth;
+  }
 }
 
 function incrementScore(growth) {
@@ -337,8 +364,8 @@ function incrementScore(growth) {
     (scoreboard) =>
       (scoreboard.innerText = parseInt(scoreboard.innerText) + growth),
   );
-  if (parseInt(maxScore.innerText) < parseInt(scoreboards[1].innerText)) {
-    maxScore.innerText = parseInt(maxScore.innerText) + growth;
+  if (parseInt(maxScore.innerText) < parseInt(scoreboards[0].innerText)) {
+    maxScore.innerText = scoreboards[0].innerText;
   }
 }
 
@@ -427,5 +454,114 @@ function cyclePause() {
       beat();
       isPaused = false;
       break;
+  }
+}
+
+function generateBonus() {
+  do {
+    bonus.pixel = bonus.positions[Math.floor(Math.random() * 4)];
+  } while (snake.positions.includes(bonus.pixel));
+
+  switch (Math.floor(Math.random() * 4 + 1)) {
+    case 1:
+      bonus.pixel.style.backgroundColor = '#8B62A3';
+      break;
+    case 2:
+      bonus.pixel.style.backgroundColor = '#CA6180';
+      break;
+    case 3:
+      bonus.pixel.style.backgroundColor = '#E05D3A';
+      break;
+    case 4:
+      bonus.pixel.style.backgroundColor = '#D1A000';
+      break;
+    case 5:
+      bonus.pixel.style.backgroundColor = '#4495A2';
+      break;
+  }
+  if (Math.random() >= 0.5) {
+    bonus.points = +Math.floor(Math.random() * 19 + 1);
+  } else bonus.points = -Math.floor(Math.random() * 19 + 1);
+  if (Math.random() >= 0.5) {
+    bonus.speed = +Math.floor(Math.random() * 199 + 1);
+  } else bonus.speed = -Math.floor(Math.random() * 199 + 1);
+  bonus.wasEaten = false;
+  bonus.wasGenerated = true;
+}
+
+/*
+function generateBonus() {
+  bonus.type = Math.floor(Math.random() * 4 + 1);
+  bonus.pixel = bonus.array[Math.floor(Math.random() * 3)];
+  switch (bonus.type) {
+    case 1:
+      bonus.pixel.style.backgroundColor = '#8B62A3';
+      break;
+    case 2:
+      bonus.pixel.style.backgroundColor = '#CA6180';
+      break;
+    case 3:
+      bonus.pixel.style.backgroundColor = '#E05D3A';
+      break;
+    case 4:
+      bonus.pixel.style.backgroundColor = '#D1A000';
+      break;
+    case 5:
+      bonus.pixel.style.backgroundColor = '#4495A2';
+      break;
+  }
+}
+
+function eatBonus() {
+  if (snake.head.classList == bonus.pixel.classList) {
+    switch (bonus.type) {
+      case 1:
+        growSnake(1);
+        pulseTiming += 50;
+        break;
+      case 2:
+        growSnake(2);
+        pulseTiming += 50;
+        break;
+      case 3:
+        growSnake(3);
+        pulseTiming += 50;
+        break;
+      case 4:
+        growSnake(4);
+        pulseTiming += 50;
+        break;
+      case 5:
+        growSnake(5);
+        pulseTiming += 100;
+        break;
+    }
+    growSnake(1);
+    pulseTiming -= 20;
+  }
+}*/
+
+function eat(food) {
+  if (snake.head.classList == food.pixel.classList) {
+    growSnake(food.points);
+    if (pulseTiming >= 50) {
+      pulseTiming += food.speed;
+    }
+    if (pulseTiming < 50) {
+      pulseTiming = 50;
+    }
+    if (food == apple) {
+      generateApple();
+    }
+    if (food == bonus) {
+      bonus.wasEaten = true;
+    }
+    if (
+      apple.count % 2 == 0 &&
+      bonus.wasEaten == true &&
+      bonus.wasGenerated == false
+    ) {
+      generateBonus();
+    }
   }
 }
