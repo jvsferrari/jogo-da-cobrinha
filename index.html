@@ -50,11 +50,34 @@
     <div id="gameOverPopUp" class="popUp">
       <p>Fim do jogo!</p>
       <div class="buttons">
-        <div class="compoundButton">
-          <button>Sua pontuação</button>
-          <p class="currentScore">0</p>
-        </div>
+        <button class="return">Voltar ao menu</button>
         <button class="tryAgain">Tentar novamente</button>
+      </div>
+      <div class="tableContainer">
+        <table>
+          <thead>
+            <tr>
+              <th>Jogador</th>
+              <th>Pontuação máxima</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody">
+            <tr id="row1"></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div id="newGamePopUp" class="popUp">
+      <select id="selectPlayer">
+        <option value="new">Novo jogador</option>
+      </select>
+      <div class="buttons">
+        <div id="newName" class="compoundButton">
+          <button>Nome:</button>
+          <input id="nameField" placeholder="Nome" />
+        </div>
+        <button id="newGame">Iniciar</button>
       </div>
     </div>
 
@@ -81,7 +104,7 @@
         </div>
         <button id="pause"><i class="fa-solid fa-pause"></i></button>
         <button id="restart">Reiniciar</button>
-        <button id="return">Retornar ao menu</button>
+        <button class="return">Retornar ao menu</button>
         <p id="lastKey"><i class="fa-solid fa-arrow-down"></i></p>
       </div>
     </div>

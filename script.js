@@ -4,7 +4,7 @@ const menu = document.querySelector('#menu');
 const musicIcon = document.querySelector('#musicIcon');
 const musicFile = new Audio('./749455__nathanj848__underground-song-2.wav');
 const musicButton = document.querySelector('#musicButton');
-const returnButton = document.querySelector('#return');
+const returnButton = document.querySelectorAll('.return');
 const gamePage = document.querySelector('#game');
 const restartButton = document.querySelector('#restart');
 const lastKey = document.querySelector('#lastKey');
@@ -20,6 +20,12 @@ const overflowIcon = document.querySelector('#overflowIcon');
 const overflowButton = document.querySelector('#overflowButton');
 const pauseButton = document.querySelector('#pause');
 const gameContainer = document.getElementById('game');
+const newGamePopUp = document.getElementById('newGamePopUp');
+const tableBody = document.querySelector('#tableBody');
+const nameField = document.querySelector('#nameField');
+const newGame = document.querySelector('#newGame');
+const selectPlayer = document.querySelector('#selectPlayer');
+const newName = document.querySelector('#newName');
 
 //starting definitions
 //snake object
@@ -53,6 +59,8 @@ let bonus = {
   wasGenerated: false,
 };
 
+let players = [0];
+
 snake.head = document.querySelector(`.r${snake.row}.c${snake.column}`);
 let tail = document.querySelector(`.r${snake.row + 1}.c${snake.column}`);
 let pulse;
@@ -62,10 +70,15 @@ let pulseTiming = 500;
 let gridContainer;
 let gridOverflow = false;
 let isPaused = false;
+let currentPlayer = 1;
 
 //setup event listeners
-start.addEventListener('click', startGame);
-returnButton.addEventListener('click', returnToMenu);
+start.addEventListener('click', () => {
+  startGame('menu');
+});
+returnButton.forEach((button) => {
+  button.addEventListener('click', returnToMenu);
+});
 musicButton.addEventListener('click', toggleMusic);
 restartButton.addEventListener('click', restart);
 difficultyButton.addEventListener('click', changeDifficulty);
@@ -74,6 +87,14 @@ tryAgain.forEach((button) => {
 });
 overflowButton.addEventListener('click', cycleOverflow);
 pauseButton.addEventListener('click', cyclePause);
+selectPlayer.addEventListener('change', (event) => {
+  if (event.target.value == 'new') {
+    newName.style.display = 'flex';
+  } else {
+    newName.style.display = 'none';
+    currentPlayer = parseInt(event.target.value);
+  }
+});
 
 //arrow keypresses*
 window.addEventListener('keydown', (event) => {
@@ -157,6 +178,7 @@ function makeGrid() {
 }
 
 function restart() {
+  gameOverPopUp.style.display = 'none';
   if (gameContainer.contains(gridContainer)) {
     gameContainer.removeChild(gridContainer);
   }
@@ -170,14 +192,40 @@ function restart() {
 }
 
 function returnToMenu() {
+  gameOverPopUp.style.display = 'none';
   gamePage.style.display = 'none';
   document.querySelector('body').prepend(menu);
   gameContainer.removeChild(gridContainer);
   clearInterval(pulse);
 }
 
-//exit menu, create 2 pixel snake, create grid(if it does noot exist), reset score, positions and snake.length, start and draw snake and apple, start pulsing
-function startGame() {
+function waitForName(button) {
+  return new Promise((resolve) => {
+    function newPlayer() {
+      button.removeEventListener('click', newPlayer);
+      resolve();
+    }
+    button.addEventListener('click', newPlayer);
+  });
+}
+
+//exit menu, create 2 pixel snake, create grid(if it does not exist), reset score, positions and snake.length, start and draw snake and apple, start pulsing
+async function startGame(caller) {
+  if (caller == 'menu') {
+    newGamePopUp.style.display = 'flex';
+    await waitForName(newGame);
+    if (selectPlayer.value == 'new') {
+      currentPlayer = players[0] + 1;
+      let newPlayer = document.createElement('option');
+      newPlayer.innerText = nameField.value;
+      newPlayer.value = players[0] + 1;
+      selectPlayer.appendChild(newPlayer);
+      players[0]++;
+    }
+    nameField.value = '';
+    players.push(createPlayer(nameField.value));
+    newGamePopUp.style.display = 'none';
+  }
   gamePage.style.display = 'flex';
   makeGrid();
   if (document.querySelector('body').contains(menu)) {
@@ -312,6 +360,7 @@ function resetScore() {
   scoreboards.forEach((scoreboard) => {
     scoreboard.innerText = '0';
   });
+  players[currentPlayer].score = 0;
 }
 
 //generate and draw apple at least 3 pixels away from head and only where there is no snake body
@@ -364,8 +413,10 @@ function incrementScore(growth) {
     (scoreboard) =>
       (scoreboard.innerText = parseInt(scoreboard.innerText) + growth),
   );
+  players[currentPlayer].score = parseInt(scoreboards[0].innerText);
   if (parseInt(maxScore.innerText) < parseInt(scoreboards[0].innerText)) {
     maxScore.innerText = scoreboards[0].innerText;
+    players[currentPlayer].maxScore = parseInt(scoreboards[0].innerText);
   }
 }
 
@@ -489,58 +540,6 @@ function generateBonus() {
   bonus.wasGenerated = true;
 }
 
-/*
-function generateBonus() {
-  bonus.type = Math.floor(Math.random() * 4 + 1);
-  bonus.pixel = bonus.array[Math.floor(Math.random() * 3)];
-  switch (bonus.type) {
-    case 1:
-      bonus.pixel.style.backgroundColor = '#8B62A3';
-      break;
-    case 2:
-      bonus.pixel.style.backgroundColor = '#CA6180';
-      break;
-    case 3:
-      bonus.pixel.style.backgroundColor = '#E05D3A';
-      break;
-    case 4:
-      bonus.pixel.style.backgroundColor = '#D1A000';
-      break;
-    case 5:
-      bonus.pixel.style.backgroundColor = '#4495A2';
-      break;
-  }
-}
-
-function eatBonus() {
-  if (snake.head.classList == bonus.pixel.classList) {
-    switch (bonus.type) {
-      case 1:
-        growSnake(1);
-        pulseTiming += 50;
-        break;
-      case 2:
-        growSnake(2);
-        pulseTiming += 50;
-        break;
-      case 3:
-        growSnake(3);
-        pulseTiming += 50;
-        break;
-      case 4:
-        growSnake(4);
-        pulseTiming += 50;
-        break;
-      case 5:
-        growSnake(5);
-        pulseTiming += 100;
-        break;
-    }
-    growSnake(1);
-    pulseTiming -= 20;
-  }
-}*/
-
 function eat(food) {
   if (snake.head.classList == food.pixel.classList) {
     growSnake(food.points);
@@ -564,4 +563,12 @@ function eat(food) {
       generateBonus();
     }
   }
+}
+
+function createPlayer(name) {
+  return {
+    name: name,
+    score: 0,
+    maxScore: 0,
+  };
 }
