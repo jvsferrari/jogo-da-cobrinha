@@ -16,8 +16,8 @@ const gameOverPopUp = document.querySelector('#gameOverPopUp');
 const winPopUp = document.querySelector('#winPopUp');
 const popUp = document.querySelectorAll('.popUp');
 const scoreboards = document.querySelectorAll('.currentScore');
-const overflowIcon = document.querySelector('#overflowIcon');
-const overflowButton = document.querySelector('#overflowButton');
+const wallsIcon = document.querySelector('#wallsIcon');
+const wallsButton = document.querySelector('#wallsButton');
 const pauseButton = document.querySelector('#pause');
 const gameContainer = document.getElementById('game');
 const newGamePopUp = document.getElementById('newGamePopUp');
@@ -68,7 +68,7 @@ let oldTail = '';
 let difficulty = 'Normal';
 let pulseTiming = 500;
 let gridContainer;
-let gridOverflow = false;
+let walls = true;
 let isPaused = false;
 let currentPlayer = -1;
 let gameIsOver = false;
@@ -86,7 +86,7 @@ difficultyButton.addEventListener('click', changeDifficulty);
 tryAgain.forEach((button) => {
   button.addEventListener('click', restart);
 });
-overflowButton.addEventListener('click', cycleOverflow);
+wallsButton.addEventListener('click', cycleWalls);
 pauseButton.addEventListener('click', cyclePause);
 selectPlayer.addEventListener('change', (event) => {
   if (event.target.value == 'new') {
@@ -95,6 +95,10 @@ selectPlayer.addEventListener('change', (event) => {
     newName.style.display = 'none';
     currentPlayer = parseInt(event.target.value);
   }
+});
+window.addEventListener('beforeunload', (event) => {
+  event.preventDefault();
+  event.returnValue = '';
 });
 
 //arrow keypresses*
@@ -165,7 +169,7 @@ function makeGrid() {
     gridContainer.appendChild(newRow);
   }
   const pixels = document.querySelectorAll('.pixel');
-  if (gridOverflow == true) {
+  if (walls == false) {
     pixels.forEach((pixel) => {
       pixel.style.border = '0';
     });
@@ -219,11 +223,13 @@ async function startGame(caller) {
       currentPlayer++;
       newPlayer.value = currentPlayer;
       selectPlayer.appendChild(newPlayer);
+      players.push(createPlayer(nameField.value, walls, difficulty));
     }
-    players.push(createPlayer(nameField.value));
     nameField.value = '';
     newGamePopUp.style.display = 'none';
   }
+  players[currentPlayer].walls = walls;
+  players[currentPlayer].difficulty = difficulty;
   gamePage.style.display = 'flex';
   makeGrid();
   if (document.querySelector('body').contains(menu)) {
@@ -232,6 +238,7 @@ async function startGame(caller) {
   resetScore();
   snake.allPositions.length = 0;
   snake.positions.length = 0;
+  maxScore.innerText = 0;
   snake.length = 2;
   snake.direction = 'up';
   apple.count = 0;
@@ -327,7 +334,7 @@ function eraseTail() {
 
 //check if snake has hit a border
 function overflow() {
-  if (gridOverflow) {
+  if (!walls) {
     if (snake.row > 30 && snake.direction == 'down') {
       snake.row = 1;
     }
@@ -422,10 +429,18 @@ function drawTable() {
     const newRow = document.createElement('tr');
     const name = document.createElement('td');
     const score = document.createElement('td');
+    const walls = document.createElement('td');
+    const difficulty = document.createElement('td');
     name.innerText = players[i].name;
     score.innerText = players[i].maxScore;
+    if (players[i].walls) {
+      walls.innerText = 'Sim';
+    } else walls.innerText = 'Não';
+    difficulty.innerText = players[i].difficulty;
     newRow.appendChild(name);
     newRow.appendChild(score);
+    newRow.appendChild(walls);
+    newRow.appendChild(difficulty);
     tableBody.appendChild(newRow);
   }
 }
@@ -490,15 +505,15 @@ function win() {
   }
 }
 
-function cycleOverflow() {
-  switch (gridOverflow) {
+function cycleWalls() {
+  switch (walls) {
     case true:
-      gridOverflow = false;
-      overflowIcon.innerHTML = '<i class="fa-regular fa-circle-check"></i>';
+      walls = false;
+      wallsIcon.innerHTML = '<i class="fa-regular fa-circle"></i>';
       break;
     case false:
-      gridOverflow = true;
-      overflowIcon.innerHTML = '<i class="fa-regular fa-circle"></i>';
+      walls = true;
+      wallsIcon.innerHTML = '<i class="fa-regular fa-circle-check"></i>';
       break;
   }
 }
@@ -575,10 +590,12 @@ function eat(food) {
   }
 }
 
-function createPlayer(name) {
+function createPlayer(name, walls, difficulty) {
   return {
     name: name,
     score: 0,
     maxScore: 0,
+    walls: walls,
+    difficulty: difficulty,
   };
 }
