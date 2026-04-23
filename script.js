@@ -46,7 +46,7 @@ let apple = {
   column: 1,
   pixel: '',
   points: 1,
-  speed: -20,
+  speed: -10,
   count: 0,
 };
 
@@ -59,7 +59,7 @@ let bonus = {
   wasGenerated: false,
 };
 
-let players = [0];
+let players = [];
 
 snake.head = document.querySelector(`.r${snake.row}.c${snake.column}`);
 let tail = document.querySelector(`.r${snake.row + 1}.c${snake.column}`);
@@ -70,7 +70,8 @@ let pulseTiming = 500;
 let gridContainer;
 let gridOverflow = false;
 let isPaused = false;
-let currentPlayer = 1;
+let currentPlayer = -1;
+let gameIsOver = false;
 
 //setup event listeners
 start.addEventListener('click', () => {
@@ -187,8 +188,7 @@ function restart() {
   lastKey.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
   checkDifficulty();
   startGame();
-  isPaused = true;
-  cyclePause();
+  isPaused = false;
 }
 
 function returnToMenu() {
@@ -196,7 +196,6 @@ function returnToMenu() {
   gamePage.style.display = 'none';
   document.querySelector('body').prepend(menu);
   gameContainer.removeChild(gridContainer);
-  clearInterval(pulse);
 }
 
 function waitForName(button) {
@@ -215,15 +214,14 @@ async function startGame(caller) {
     newGamePopUp.style.display = 'flex';
     await waitForName(newGame);
     if (selectPlayer.value == 'new') {
-      currentPlayer = players[0] + 1;
       let newPlayer = document.createElement('option');
       newPlayer.innerText = nameField.value;
-      newPlayer.value = players[0] + 1;
+      currentPlayer++;
+      newPlayer.value = currentPlayer;
       selectPlayer.appendChild(newPlayer);
-      players[0]++;
     }
-    nameField.value = '';
     players.push(createPlayer(nameField.value));
+    nameField.value = '';
     newGamePopUp.style.display = 'none';
   }
   gamePage.style.display = 'flex';
@@ -243,19 +241,18 @@ async function startGame(caller) {
   //console.log(snake.positions);
   drawSnake();
   generateApple();
+  gameIsOver = false;
+  clearTimeout(pulse);
   beat();
 }
 
 //pulses moving snake and checking if apple was eaten, calls itself
 function beat() {
-  clearInterval(pulse);
-  pulse = setInterval(() => {
+  if (isPaused == false) {
     eat(apple);
     eat(bonus);
     moveSnake(snake.direction);
     win();
-
-    drawSnake();
     snake.hasChangedDirection = false;
     //erase duplicates
     snake.allPositions = [...new Set(snake.allPositions)];
@@ -264,9 +261,12 @@ function beat() {
     if (snake.gridIsFull == false) {
       fullGrid();
     }
-    beat();
     checkColision();
-  }, pulseTiming);
+    if (gameIsOver == false) {
+      drawSnake();
+      pulse = setTimeout(beat, pulseTiming);
+    }
+  }
 }
 
 //start snake and push first and second positions' values
@@ -305,7 +305,6 @@ function moveSnake(direction) {
   //pushes the new position and then splices the old
   snake.positions.push(snake.head);
   snake.allPositions.push(snake.head);
-  eraseTail();
   //console.log(snake.positions);
 }
 
@@ -316,6 +315,7 @@ function drawSnake() {
     }
   }
   snake.positions[snake.positions.length - 1].style.backgroundColor = '#CA6180';
+  eraseTail();
 }
 
 function eraseTail() {
@@ -342,15 +342,19 @@ function overflow() {
     }
   } else {
     if (snake.row > 30 && snake.direction == 'down') {
+      snake.row = 1;
       gameOver();
     }
     if (snake.row < 1 && snake.direction == 'up') {
+      snake.row = 30;
       gameOver();
     }
     if (snake.column > 40 && snake.direction == 'right') {
+      snake.column = 1;
       gameOver();
     }
     if (snake.column < 1 && snake.direction == 'left') {
+      snake.column = 40;
       gameOver();
     }
   }
@@ -382,17 +386,6 @@ function generateApple() {
 }
 
 //check if apple was eaten; increase score, generate apple and speed up the game if the apple was eaten
-/*
-function eatApple() {
-  if (snake.head.classList == apple.pixel.classList) {
-    growSnake(1);
-    generateApple();
-    if (pulseTiming >= 50) {
-      pulseTiming -= 20;
-    }
-  }
-}
-*/
 
 function growSnake(growth) {
   if (growth < -parseInt(scoreboards[0].innerText)) {
@@ -417,6 +410,23 @@ function incrementScore(growth) {
   if (parseInt(maxScore.innerText) < parseInt(scoreboards[0].innerText)) {
     maxScore.innerText = scoreboards[0].innerText;
     players[currentPlayer].maxScore = parseInt(scoreboards[0].innerText);
+  }
+}
+
+function drawTable() {
+  tableBody.replaceChildren();
+  let ranking = players.toSorted((a, b) => {
+    return b.maxScore - a.maxScore;
+  });
+  for (let i = 0; i < players.length; i++) {
+    const newRow = document.createElement('tr');
+    const name = document.createElement('td');
+    const score = document.createElement('td');
+    name.innerText = players[i].name;
+    score.innerText = players[i].maxScore;
+    newRow.appendChild(name);
+    newRow.appendChild(score);
+    tableBody.appendChild(newRow);
   }
 }
 
@@ -469,14 +479,14 @@ function fullGrid() {
 function gameOver() {
   //gameOverScore.innerText = score.innerText;
   gameOverPopUp.style.display = 'flex';
-  clearInterval(pulse);
+  gameIsOver = true;
+  drawTable();
 }
 
 //adicionar cobra com 1200 de length (win)
 function win() {
   if (snake.length == 1200) {
     winPopUp.style.display = 'flex';
-    clearInterval(pulse);
   }
 }
 
@@ -496,14 +506,14 @@ function cycleOverflow() {
 function cyclePause() {
   switch (isPaused) {
     case false:
-      clearInterval(pulse);
       pauseButton.innerHTML = '<i class="fa-solid fa-play"></i>';
       isPaused = true;
+      clearTimeout(pulse);
       break;
     case true:
       pauseButton.innerHTML = '<i class="fa-solid fa-pause"></i>';
-      beat();
       isPaused = false;
+      beat();
       break;
   }
 }
