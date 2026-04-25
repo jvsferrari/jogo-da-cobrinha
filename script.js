@@ -119,7 +119,6 @@ window.addEventListener('keydown', (event) => {
           snake.direction = 'down';
         }
         break;
-
       case 'ArrowLeft':
         if (snake.direction != 'right') {
           lastKey.innerHTML = '<i class="fa-solid fa-arrow-left"></i>';
@@ -132,6 +131,8 @@ window.addEventListener('keydown', (event) => {
           snake.direction = 'right';
         }
         break;
+      default:
+        return;
     }
     snake.hasChangedDirection = true;
   }
@@ -165,10 +166,9 @@ function makeGrid() {
       newDiv.classList.add(`r${row}`, `c${column}`, 'pixel');
       newRow.appendChild(newDiv);
     }
-
-    gamePage.prepend(gridContainer);
     gridContainer.appendChild(newRow);
   }
+  gamePage.prepend(gridContainer);
   const pixels = document.querySelectorAll('.pixel');
   if (walls == false) {
     pixels.forEach((pixel) => {
@@ -198,7 +198,7 @@ function restart() {
 
 function returnToMenu() {
   clearTimeout(pulse);
-  gameOverPopUp.style.display = 'none';
+  popUp.forEach((element) => (element.style.display = 'none'));
   gamePage.style.display = 'none';
   document.querySelector('body').prepend(menu);
   gameContainer.removeChild(gridContainer);
@@ -216,13 +216,20 @@ function waitForName(button) {
 
 //exit menu, create 2 pixel snake, create grid(if it does not exist), reset score, positions and snake.length, start and draw snake and apple, start pulsing
 async function startGame(caller) {
+  checkDifficulty();
+  pauseButton.innerHTML = '<i class="fa-solid fa-pause"></i>';
+  isPaused = false;
   if (caller == 'menu') {
     newGamePopUp.style.display = 'flex';
     await waitForName(newGame);
     if (selectPlayer.value == 'new') {
-      let newPlayer = document.createElement('option');
-      newPlayer.innerText = nameField.value;
       currentPlayer = players.length;
+      let newPlayer = document.createElement('option');
+      if (nameField.value.trim() == '') {
+        nameField.value = `Jogador ${currentPlayer}`;
+      }
+      newPlayer.innerText = nameField.value;
+
       newPlayer.value = currentPlayer;
       selectPlayer.appendChild(newPlayer);
       players.push(createPlayer(nameField.value, walls, difficulty));
@@ -249,6 +256,7 @@ async function startGame(caller) {
   snake.direction = 'up';
   apple.count = 0;
   bonus.wasEaten = true;
+  snake.gridIsFull = false;
   lastKey.innerHTML = '<i class="fa-solid fa-arrow-up"></i>';
   startSnake();
   //console.log(snake.positions);
@@ -277,9 +285,9 @@ function beat() {
     if (snake.gridIsFull == false) {
       fullGrid();
     }
+    checkColision();
+    drawSnake();
     if (gameIsOver == false) {
-      drawSnake();
-      checkColision();
       pulse = setTimeout(beat, pulseTiming);
     }
   }
@@ -394,7 +402,8 @@ function generateApple() {
   } while (
     Math.abs(apple.row - snake.row) < 3 ||
     Math.abs(apple.column - snake.column) < 3 ||
-    snake.positions.includes(apple.pixel)
+    snake.positions.includes(apple.pixel) ||
+    apple.pixel == bonus.pixel
   );
   //console.log(`Apple row: ${apple.row}\nApple column: ${apple.column}`);
   apple.pixel = document.querySelector(`.r${apple.row}.c${apple.column}`);
@@ -502,6 +511,7 @@ function checkDifficulty() {
 
 //check if the snake's head has hit its body
 function checkColision() {
+  if (gameIsOver) return;
   if (
     snake.positions.indexOf(snake.head) !=
     snake.positions.lastIndexOf(snake.head)
@@ -530,8 +540,11 @@ function gameOver() {
 
 //adicionar cobra com 1200 de length (win)
 function win() {
-  if (snake.length == 1200) {
+  if (snake.length >= 1200) {
     winPopUp.style.display = 'flex';
+    gameIsOver = true;
+    rank();
+    drawTable();
   }
 }
 
