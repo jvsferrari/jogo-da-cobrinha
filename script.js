@@ -60,6 +60,7 @@ let bonus = {
 };
 
 let players = [];
+let ranking = [];
 
 snake.head = document.querySelector(`.r${snake.row}.c${snake.column}`);
 let tail = document.querySelector(`.r${snake.row + 1}.c${snake.column}`);
@@ -196,6 +197,7 @@ function restart() {
 }
 
 function returnToMenu() {
+  clearTimeout(pulse);
   gameOverPopUp.style.display = 'none';
   gamePage.style.display = 'none';
   document.querySelector('body').prepend(menu);
@@ -220,16 +222,20 @@ async function startGame(caller) {
     if (selectPlayer.value == 'new') {
       let newPlayer = document.createElement('option');
       newPlayer.innerText = nameField.value;
-      currentPlayer++;
+      currentPlayer = players.length;
       newPlayer.value = currentPlayer;
       selectPlayer.appendChild(newPlayer);
       players.push(createPlayer(nameField.value, walls, difficulty));
+    } else {
+      players[currentPlayer].turn++;
     }
     nameField.value = '';
     newGamePopUp.style.display = 'none';
-  }
-  players[currentPlayer].walls = walls;
-  players[currentPlayer].difficulty = difficulty;
+  } else players[currentPlayer].turn++;
+  players[currentPlayer].scores[players[currentPlayer].turn] = 0;
+  players[currentPlayer].maxScores[players[currentPlayer].turn] = 0;
+  players[currentPlayer].walls[players[currentPlayer].turn] = walls;
+  players[currentPlayer].difficulties[players[currentPlayer].turn] = difficulty;
   gamePage.style.display = 'flex';
   makeGrid();
   if (document.querySelector('body').contains(menu)) {
@@ -265,12 +271,15 @@ function beat() {
     snake.allPositions = [...new Set(snake.allPositions)];
     //console.log(`snake.allPositions.length: ${snake.allPositions.length}`);
     //console.log(snake.allPositions);
+    players[currentPlayer].bestTurn = players[currentPlayer].maxScores.indexOf(
+      Math.max(...players[currentPlayer].maxScores),
+    );
     if (snake.gridIsFull == false) {
       fullGrid();
     }
-    checkColision();
     if (gameIsOver == false) {
       drawSnake();
+      checkColision();
       pulse = setTimeout(beat, pulseTiming);
     }
   }
@@ -316,13 +325,13 @@ function moveSnake(direction) {
 }
 
 function drawSnake() {
-  for (let i = 0; i < snake.length; i++) {
+  eraseTail();
+  for (let i = 0; i < snake.length - 1; i++) {
     if (snake.positions.length > i) {
       snake.positions[i].style.backgroundColor = '#FCB7C7';
     }
   }
   snake.positions[snake.positions.length - 1].style.backgroundColor = '#CA6180';
-  eraseTail();
 }
 
 function eraseTail() {
@@ -371,7 +380,7 @@ function resetScore() {
   scoreboards.forEach((scoreboard) => {
     scoreboard.innerText = '0';
   });
-  players[currentPlayer].score = 0;
+  //players[currentPlayer].scores[players[currentPlayer].turn] = 0;
 }
 
 //generate and draw apple at least 3 pixels away from head and only where there is no snake body
@@ -413,30 +422,48 @@ function incrementScore(growth) {
     (scoreboard) =>
       (scoreboard.innerText = parseInt(scoreboard.innerText) + growth),
   );
-  players[currentPlayer].score = parseInt(scoreboards[0].innerText);
+  players[currentPlayer].scores[players[currentPlayer].turn] = parseInt(
+    scoreboards[0].innerText,
+  );
   if (parseInt(maxScore.innerText) < parseInt(scoreboards[0].innerText)) {
     maxScore.innerText = scoreboards[0].innerText;
-    players[currentPlayer].maxScore = parseInt(scoreboards[0].innerText);
+    players[currentPlayer].maxScores[players[currentPlayer].turn] = parseInt(
+      scoreboards[0].innerText,
+    );
   }
+}
+
+function rank() {
+  for (i = 0; i < players.length; i++) {
+    ranking[i] = {
+      index: players[i].index,
+      name: players[i].name,
+      maxScore: players[i].maxScores[players[i].bestTurn],
+      difficulty: players[i].difficulties[players[i].bestTurn],
+      wall: players[i].walls[players[i].bestTurn],
+    };
+  }
+
+  ranking.sort((a, b) => {
+    return b.maxScore - a.maxScore;
+  });
 }
 
 function drawTable() {
   tableBody.replaceChildren();
-  let ranking = players.toSorted((a, b) => {
-    return b.maxScore - a.maxScore;
-  });
-  for (let i = 0; i < players.length; i++) {
+
+  for (let i = 0; i < ranking.length; i++) {
     const newRow = document.createElement('tr');
     const name = document.createElement('td');
     const score = document.createElement('td');
     const walls = document.createElement('td');
     const difficulty = document.createElement('td');
-    name.innerText = players[i].name;
-    score.innerText = players[i].maxScore;
-    if (players[i].walls) {
+    name.innerText = ranking[i].name;
+    score.innerText = ranking[i].maxScore;
+    if (ranking[i].wall) {
       walls.innerText = 'Sim';
     } else walls.innerText = 'Não';
-    difficulty.innerText = players[i].difficulty;
+    difficulty.innerText = ranking[i].difficulty;
     newRow.appendChild(name);
     newRow.appendChild(score);
     newRow.appendChild(walls);
@@ -492,9 +519,12 @@ function fullGrid() {
 }
 
 function gameOver() {
-  //gameOverScore.innerText = score.innerText;
   gameOverPopUp.style.display = 'flex';
   gameIsOver = true;
+  players[currentPlayer].bestTurn = players[currentPlayer].maxScores.indexOf(
+    Math.max(...players[currentPlayer].maxScores),
+  );
+  rank();
   drawTable();
 }
 
@@ -592,10 +622,13 @@ function eat(food) {
 
 function createPlayer(name, walls, difficulty) {
   return {
+    index: players.length,
     name: name,
-    score: 0,
-    maxScore: 0,
-    walls: walls,
-    difficulty: difficulty,
+    scores: [0],
+    turn: 0,
+    bestTurn: 0,
+    maxScores: [0],
+    walls: [walls],
+    difficulties: [difficulty],
   };
 }
