@@ -434,7 +434,7 @@ function incrementScore(growth) {
 }
 
 function rank() {
-  for (i = 0; i < players.length; i++) {
+  for (let i = 0; i < players.length; i++) {
     ranking[i] = {
       index: players[i].index,
       name: players[i].name,
@@ -596,7 +596,7 @@ function generateBonus() {
 }
 
 function eat(food) {
-  if (snake.head.classList == food.pixel.classList) {
+  if (snake.head === food.pixel) {
     growSnake(food.points);
     if (pulseTiming >= 50) {
       pulseTiming += food.speed;
