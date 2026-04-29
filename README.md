@@ -11,10 +11,10 @@ O [jogador](#jogadores) pode:
 
 ## Jogo
 
-- a grade de pixels ([tabuleiro](#tabuleiro)) é gerada a cada novo [jogo](#jogo)
+- a grade de pixels ([tabuleiro](#tabuleiro)) é gerada a cada novo jogo
 - a [cobrinha](#cobrinha) inicia movendo-se para cima
 - a cada [intervalo](#intervalo), um movimento é gerado na direção selecionada ou na direção do [intervalo](#intervalo) anterior, caso não haja mudança
-- uma [maçã](#maçã) é gerada ao iniciar o [jogo](#jogo) e cada vez que uma [maçã](#maçã) é [comida](#comer)
+- uma [maçã](#maçã) é gerada ao iniciar o jogo e cada vez que uma [maçã](#maçã) é [comida](#comer)
 - um [bônus](#bônus) é gerado depois que a primeira [maçã](#maçã) é [comida](#comer) e a cada segunda [maçã](#maçã) [comida](#comer), se já não houver um [bônus](#bônus)
 - A [pontuação](#pontuação) aumenta uma unidade a cada [maçã](#maçã) [comida](#comer)
 - A cada [ponto](#pontos) o comprimento da [cobrinha](#cobrinha) aumenta uma unidade
@@ -23,7 +23,7 @@ O [jogador](#jogadores) pode:
 
 ## Cobrinha
 
-A [cobrinha](#cobrinha) é um objeto com 9 propriedades, definido, inicialmente, por:
+A cobrinha é um objeto com 9 propriedades, definido, inicialmente, por:
 
 ```javascript
 let snake = {
@@ -39,19 +39,19 @@ let snake = {
 };
 ```
 
-- O array `positions` armazena todas as posições que a [cobrinha](#cobrinha) ocupa no momento
-- O integer `length` armazena o comprimento da [cobrinha](#cobrinha)
-- A string `head` armazena o node correspondente ao pixel em que se encontra a cabeça da [cobrinha](#cobrinha)
-- O integer `row` e o integer `column` armazenam a linha e a coluna, respectivamente, em que se encontra a cabeça da [cobrinha](#cobrinha)
-- A string `direction` armazena o sentido atual do movimento da [cobrinha](#cobrinha), pode ser `up`, `down`, `left` ou `right`
-- O boolean `hasChangedDirection` armazena `true` se a [cobrinha](#cobrinha) já mudou de direção no [intervalo](#intervalo) atual e `false` caso contrário
-- O array `allPositions` armazena todas as posições pelas quais a cabeça da [cobrinha](#cobrinha) passou
+- O array `positions` armazena todas as posições que a cobrinha ocupa no momento
+- O integer `length` armazena o comprimento da cobrinha
+- A string `head` armazena o node correspondente ao pixel em que se encontra a cabeça da cobrinha
+- O integer `row` e o integer `column` armazenam a linha e a coluna, respectivamente, em que se encontra a cabeça da cobrinha
+- A string `direction` armazena o sentido atual do movimento da cobrinha, pode ser `up`, `down`, `left` ou `right`
+- O boolean `hasChangedDirection` armazena `true` se a cobrinha já mudou de direção no [intervalo](#intervalo) atual e `false` caso contrário
+- O array `allPositions` armazena todas as posições pelas quais a cabeça da cobrinha passou
 
 ## Comidas
 
 ### Maçã
 
-A [maçã](#maçã) é um objeto com 6 propriedades, definido, inicialmente, por:
+A maçã é um objeto com 6 propriedades, definido, inicialmente, por:
 
 ```javascript
 let apple = {
@@ -64,11 +64,11 @@ let apple = {
 };
 ```
 
-**Uma [maçã](#maçã) é gerada cada vez que a [maçã](#maçã) anterior é [comida](#comer)**
+**Uma maçã é gerada cada vez que a maçã anterior é [comida](#comer)**
 
 ### Bônus
 
-O [bônus](#bônus) é um objeto com 6 propriedades, definido, inicialmente, por:
+O bônus é um objeto com 6 propriedades, definido, inicialmente, por:
 
 ```javascript
 let bonus = {
@@ -81,24 +81,24 @@ let bonus = {
 };
 ```
 
-**Um [bônus](#bônus) é gerado para cada duas [maçãs](#maçã) se o [bônus](#bônus) anterior foi [comido](#comer)**
+**Um bônus é gerado para cada duas [maçãs](#maçã) se o bônus anterior foi [comido](#comer)**
 
-**Os [bônus](#bônus) são gerados apenas nos quatro cantos do [tabuleiro](#tabuleiro)**
+**Os bônus são gerados apenas nos quatro cantos do [tabuleiro](#tabuleiro)**
 
-**A [pontuação](#pontuação) do [bônus](#bônus) varia de -20 a +20 e o período acrescido (`speed`) varia de -200 a +200 ms**
+**A [pontuação](#pontuação) do bônus varia de -20 a +20 e o período acrescido (`speed`) varia de -200 a +200 ms**
 
-- O _integer_ `row` e o _integer_ `column` armazenam a linha e a coluna, respectivamente, em que se encontra a [comida](#comidas)
-- A _string_ `pixel` armazena o node correspondente ao pixel em que a [comida](#comidas) está
-- O _integer_ `points` armazena a [pontuação](#pontuação) acrescida a cada [comida](#comidas)
+- O _integer_ `row` e o _integer_ `column` armazenam a linha e a coluna, respectivamente, em que se encontra a comida
+- A _string_ `pixel` armazena o node correspondente ao pixel em que a comida está
+- O _integer_ `points` armazena a [pontuação](#pontuação) acrescida a cada comida
 - O _integer_ `speed` armazena a diminuição do período do [intervalo](#intervalo) (`-` indica ganho de velocidade e `+` significa perda de velocidade)
 - O _integer_ `count` armazena o número da [maçã](#maçã) atual, sendo `1` a primeira [maçã](#maçã)
-- O _array_ `positions` armazena todas as posições que o [bônus](#bônus) pode ocupar, sendo esses os quatro cantos do [tabuleiro](#tabuleiro)
-- O _boolean_ `wasEaten` armazena `true` se o [bônus](#bônus) gerado pela [maçã](#maçã) atual foi [comido](#comer) e `false` caso contrário
-- O _boolean_ `wasGenerated` armazena `true` se um [bônus](#bônus) foi gerado pela [maçã](#maçã) atual e `false` caso contrário
+- O _array_ `positions` armazena todas as posições que o bônus pode ocupar, sendo esses os quatro cantos do [tabuleiro](#tabuleiro)
+- O _boolean_ `wasEaten` armazena `true` se o bônus gerado pela [maçã](#maçã) atual foi [comido](#comer) e `false` caso contrário
+- O _boolean_ `wasGenerated` armazena `true` se um bônus foi gerado pela [maçã](#maçã) atual e `false` caso contrário
 
 ## Comer
 
-O ato de [comer](#comer) é registrado pela função:
+O ato de comer é registrado pela função:
 
 ```javascript
 function eat(food) {
@@ -137,17 +137,17 @@ A função:
 
 ### Pontuação
 
-- A [pontuação](#pontuação) e a [pontuação](#pontuação) máxima da rodada atual são mostradas à direita do [tabuleiro](#tabuleiro)
-- Cada [comida](#comidas) tem uma [pontuação](#pontuação) associada
+- A pontuação e a pontuação máxima da rodada atual são mostradas à direita do [tabuleiro](#tabuleiro)
+- Cada [comida](#comidas) tem uma pontuação associada
 
 ### Pódio
 
-- O [pódio](#pódio) é mostrado a cada _Game Over_ ou pelo botão "Pódio", no [menu](#menu) inicial.
-- É considerada para o [pódio](#pódio) a jogada com a maior [pontuação](#pontuação) máxima de cada [jogador](#jogadores), **independentemente da [dificuldade](#dificuldade) e da presença de paredes**.
+- O pódio é mostrado a cada _Game Over_ ou pelo botão "Pódio", no [menu](#menu) inicial.
+- É considerada para o pódio a jogada com a maior [pontuação](#pontuação) máxima de cada [jogador](#jogadores), **independentemente da [dificuldade](#dificuldade) e da presença de paredes**.
 
 ## Jogadores
 
-Cada [jogador](#jogadores) é um objeto com 8 propriedades criado pela função:
+Cada jogador é um objeto com 8 propriedades criado pela função:
 
 ```javascript
 function createPlayer(name, walls, difficulty) {
@@ -164,20 +164,20 @@ function createPlayer(name, walls, difficulty) {
 }
 ```
 
-Os objetos dos [jogadores](#jogadores) são armazenados no _array_ `players`
+Os objetos dos jogadores são armazenados no _array_ `players`
 
-- O _integer_ `index` armazena o índice do [jogador](#jogadores) no _array_ `players`
-- A _string_ `name` armazena o nome do [jogador](#jogadores)
-- O _array_ `scores` armazena as [pontuações](#pontuação) finais de cada rodada do [jogador](#jogadores)
+- O _integer_ `index` armazena o índice do jogador no _array_ `players`
+- A _string_ `name` armazena o nome do jogador
+- O _array_ `scores` armazena as [pontuações](#pontuação) finais de cada rodada do jogador
 - O _integer_ `turn` armazena o número da rodada atual
 - O _integer_ `bestTurn` armazena o índice da rodada de maior [pontuação](#pontuação) máxima
-- O _array_ `maxScores` armazena as [pontuações](#pontuação) máximas de cada rodada do [jogador](#jogadores)
+- O _array_ `maxScores` armazena as [pontuações](#pontuação) máximas de cada rodada do jogador
 - O _array_ `walls` armazena `true` se a rodada tiver paredes e `false` caso contrário
 - O _array_ `difficulties` armazena a [dificuldade](#dificuldade) de cada rodada
 
 ## Tabuleiro
 
-Ao iniciar um [jogo](#jogo), é criado um [tabuleiro](#tabuleiro) de 30 linhas e 40 colunas, com paredes (borda) ou sem.
+Ao iniciar um [jogo](#jogo), é criado um tabuleiro de 30 linhas e 40 colunas, com paredes (borda) ou sem.
 
 ## Tabuleiro cheio
 
@@ -186,13 +186,13 @@ Por isso, cada pixel que já foi ocupado pela [cobrinha](#cobrinha) é pintado d
 
 ## Intervalo
 
-O [intervalo](#intervalo) é o período `pulseTiming` entre as execuções da função `beat()` em milissegundos.
+O intervalo é o período `pulseTiming` entre as execuções da função `beat()` em milissegundos.
 
 `pulseTiming` diminui ou aumenta a cada [comida](#comidas).
 
 ## Dificuldade
 
-Existem três [dificuldades](#dificuldade), que alteram o `pulseTiming` ([intervalo](#intervalo)), tornando o [jogo](#jogo) mais rápido ou mais devagar:
+Existem três dificuldades, que alteram o `pulseTiming` ([intervalo](#intervalo)), tornando o [jogo](#jogo) mais rápido ou mais devagar:
 
 ### Fácil
 
@@ -208,6 +208,6 @@ Existem três [dificuldades](#dificuldade), que alteram o `pulseTiming` ([interv
 
 ## Música
 
-A [música](#música) pode ser ativada ou desativada no [menu](#menu).
+A música pode ser ativada ou desativada no [menu](#menu).
 
 **Música: underground song 2 by nathanj848 -- https://freesound.org/s/749455/ -- License: Attribution 4.0**
