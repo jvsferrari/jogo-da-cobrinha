@@ -609,7 +609,7 @@ function generateBonus() {
     bonus.pixel = bonus.positions[Math.floor(Math.random() * 4)];
   } while (snake.positions.includes(bonus.pixel));
 
-  switch (Math.floor(Math.random() * 4 + 1)) {
+  switch (Math.floor(Math.random() * 5 + 1)) {
     case 1:
       bonus.pixel.style.backgroundColor = '#8B62A3';
       break;
@@ -627,11 +627,11 @@ function generateBonus() {
       break;
   }
   if (Math.random() >= 0.5) {
-    bonus.points = +Math.floor(Math.random() * 19 + 1);
-  } else bonus.points = -Math.floor(Math.random() * 19 + 1);
+    bonus.points = +Math.floor(Math.random() * 20 + 1);
+  } else bonus.points = -Math.floor(Math.random() * 20 + 1);
   if (Math.random() >= 0.5) {
-    bonus.speed = +Math.floor(Math.random() * 199 + 1);
-  } else bonus.speed = -Math.floor(Math.random() * 199 + 1);
+    bonus.speed = +Math.floor(Math.random() * 200 + 1);
+  } else bonus.speed = -Math.floor(Math.random() * 200 + 1);
   bonus.wasEaten = false;
   bonus.wasGenerated = true;
 }

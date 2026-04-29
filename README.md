@@ -21,6 +21,17 @@ O [jogador](#jogadores) pode:
 - A [pontuação](#pontuação) é sempre igual ao comprimento da [cobrinha](#cobrinha) - 2
 - o [jogador](#jogadores) perde se a [cobrinha](#cobrinha) tocar o próprio corpo ou se a cabeça bater na parede, caso haja
 
+### Controles
+
+- Pausar
+- Reiniciar
+- Voltar ao menu
+- Mudar direção (com as setas do teclado)
+
+### Vitória
+
+- Quando a cobra tem comprimento de 1200, o _pop-up_ de vitória aparece e o jogador é considerado o vencedor.
+
 ## Cobrinha
 
 A cobrinha é um objeto com 9 propriedades, definido, inicialmente, por:
@@ -83,7 +94,7 @@ let bonus = {
 
 **Um bônus é gerado para cada duas [maçãs](#maçã) se o bônus anterior foi [comido](#comer)**
 
-**Os bônus são gerados apenas nos quatro cantos do [tabuleiro](#tabuleiro)**
+**Os bônus são gerados apenas nos quatro cantos do [tabuleiro](#tabuleiro) e com 5 cores diferentes possíveis**
 
 **A [pontuação](#pontuação) do bônus varia de -20 a +20 e o período acrescido (`speed`) varia de -200 a +200 ms**
 
@@ -163,6 +174,8 @@ function createPlayer(name, walls, difficulty) {
   };
 }
 ```
+
+**Ao iniciar o primeiro jogo, o _pop-up_ pede por um nome para um novo jogador. Nos demais jogos, um jogador já criado também pode ser escolhido.**
 
 Os objetos dos jogadores são armazenados no _array_ `players`
 
