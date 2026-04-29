@@ -216,3 +216,7 @@ th {
   scrollbar-width: thin;
   scrollbar-color: #fefd99 #1a4a5a;
 }
+
+div:has(> #podium) {
+  display: none;
+}

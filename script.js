@@ -26,6 +26,7 @@ const nameField = document.querySelector('#nameField');
 const newGame = document.querySelector('#newGame');
 const selectPlayer = document.querySelector('#selectPlayer');
 const newName = document.querySelector('#newName');
+const podium = document.querySelector('#podium');
 
 //starting definitions
 //snake object
@@ -100,6 +101,9 @@ selectPlayer.addEventListener('change', (event) => {
 window.addEventListener('beforeunload', (event) => {
   event.preventDefault();
   event.returnValue = '';
+});
+podium.addEventListener('click', () => {
+  gameOver('podium');
 });
 
 //arrow keypresses*
@@ -201,16 +205,32 @@ function returnToMenu() {
   popUp.forEach((element) => (element.style.display = 'none'));
   gamePage.style.display = 'none';
   document.querySelector('body').prepend(menu);
-  gameContainer.removeChild(gridContainer);
+  if (gridContainer && gameContainer.contains(gridContainer)) {
+    gameContainer.removeChild(gridContainer);
+  }
 }
 
-function waitForName(button) {
+function waitForName() {
   return new Promise((resolve) => {
-    function newPlayer() {
-      button.removeEventListener('click', newPlayer);
-      resolve();
+    function onStart() {
+      newGame.removeEventListener('click', onStart);
+      returnButton.forEach((button) =>
+        button.removeEventListener('click', onCancel),
+      );
+      resolve(true);
     }
-    button.addEventListener('click', newPlayer);
+
+    function onCancel() {
+      newGame.removeEventListener('click', onStart);
+      returnButton.forEach((button) =>
+        button.removeEventListener('click', onCancel),
+      );
+      resolve(false);
+    }
+    newGame.addEventListener('click', onStart);
+    returnButton.forEach((button) =>
+      button.addEventListener('click', onCancel),
+    );
   });
 }
 
@@ -221,7 +241,10 @@ async function startGame(caller) {
   isPaused = false;
   if (caller == 'menu') {
     newGamePopUp.style.display = 'flex';
-    await waitForName(newGame);
+    let shouldProceed = await waitForName();
+    if (shouldProceed == false) {
+      return;
+    }
     if (selectPlayer.value == 'new') {
       currentPlayer = players.length;
       let newPlayer = document.createElement('option');
@@ -239,6 +262,7 @@ async function startGame(caller) {
     nameField.value = '';
     newGamePopUp.style.display = 'none';
   } else players[currentPlayer].turn++;
+  podium.parentNode.style.display = 'flex';
   players[currentPlayer].scores[players[currentPlayer].turn] = 0;
   players[currentPlayer].maxScores[players[currentPlayer].turn] = 0;
   players[currentPlayer].walls[players[currentPlayer].turn] = walls;
@@ -528,7 +552,11 @@ function fullGrid() {
   }
 }
 
-function gameOver() {
+function gameOver(caller) {
+  if (caller == 'podium') {
+    tryAgain[0].style.display = 'none';
+    gameOverPopUp.querySelector('p').innerText = 'Placar';
+  }
   gameOverPopUp.style.display = 'flex';
   gameIsOver = true;
   players[currentPlayer].bestTurn = players[currentPlayer].maxScores.indexOf(
