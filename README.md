@@ -38,15 +38,15 @@ A cobrinha é um objeto com 9 propriedades, definido, inicialmente, por:
 
 ```javascript
 let snake = {
-  positions: [],
-  length: 2,
-  head: '',
-  row: 1,
-  column: 1,
-  direction: 'up',
-  hasChangedDirection: false,
-  allPositions: [],
-  gridIsFull: false,
+	positions: [],
+	length: 2,
+	head: '',
+	row: 1,
+	column: 1,
+	direction: 'up',
+	hasChangedDirection: false,
+	allPositions: [],
+	dies: true,
 };
 ```
 
@@ -57,6 +57,7 @@ let snake = {
 - A string `direction` armazena o sentido atual do movimento da cobrinha, pode ser `up`, `down`, `left` ou `right`
 - O boolean `hasChangedDirection` armazena `true` se a cobrinha já mudou de direção no [intervalo](#intervalo) atual e `false` caso contrário
 - O array `allPositions` armazena todas as posições pelas quais a cabeça da cobrinha passou
+- O boolean `dies` armazena `true` se a cobrinha pode morrer e `false` caso contrário (debug)
 
 ## Comidas
 
@@ -66,12 +67,12 @@ A maçã é um objeto com 6 propriedades, definido, inicialmente, por:
 
 ```javascript
 let apple = {
-  row: 1,
-  column: 1,
-  pixel: '',
-  points: 1,
-  speed: -10,
-  count: 0,
+	row: 1,
+	column: 1,
+	pixel: '',
+	points: 1,
+	speed: -10,
+	count: 0,
 };
 ```
 
@@ -83,12 +84,12 @@ O bônus é um objeto com 6 propriedades, definido, inicialmente, por:
 
 ```javascript
 let bonus = {
-  pixel: '',
-  speed: 0,
-  points: 0,
-  positions: [],
-  wasEaten: true,
-  wasGenerated: false,
+	pixel: '',
+	speed: 0,
+	points: 0,
+	positions: [],
+	wasEaten: true,
+	wasGenerated: false,
 };
 ```
 
@@ -113,28 +114,28 @@ O ato de comer é registrado pela função:
 
 ```javascript
 function eat(food) {
-  if (snake.head === food.pixel) {
-    growSnake(food.points);
-    if (pulseTiming >= 50) {
-      pulseTiming += food.speed;
-    }
-    if (pulseTiming < 50) {
-      pulseTiming = 50;
-    }
-    if (food == apple) {
-      generateApple();
-    }
-    if (food == bonus) {
-      bonus.wasEaten = true;
-    }
-    if (
-      apple.count % 2 == 0 &&
-      bonus.wasEaten == true &&
-      bonus.wasGenerated == false
-    ) {
-      generateBonus();
-    }
-  }
+	if (snake.head === food.pixel) {
+		growSnake(food.points);
+		if (pulseTiming >= 50) {
+			pulseTiming += food.speed;
+		}
+		if (pulseTiming < 50) {
+			pulseTiming = 50;
+		}
+		if (food == apple) {
+			generateApple();
+		}
+		if (food == bonus) {
+			bonus.wasEaten = true;
+		}
+		if (
+			apple.count % 2 == 0 &&
+			bonus.wasEaten == true &&
+			bonus.wasGenerated == false
+		) {
+			generateBonus();
+		}
+	}
 }
 ```
 
@@ -162,16 +163,16 @@ Cada jogador é um objeto com 8 propriedades criado pela função:
 
 ```javascript
 function createPlayer(name, walls, difficulty) {
-  return {
-    index: players.length,
-    name: name,
-    scores: [0],
-    turn: 0,
-    bestTurn: 0,
-    maxScores: [0],
-    walls: [walls],
-    difficulties: [difficulty],
-  };
+	return {
+		index: players.length,
+		name: name,
+		scores: [0],
+		turn: 0,
+		bestTurn: 0,
+		maxScores: [0],
+		walls: [walls],
+		difficulties: [difficulty],
+	};
 }
 ```
 
@@ -191,6 +192,22 @@ Os objetos dos jogadores são armazenados no _array_ `players`
 ## Tabuleiro
 
 Ao iniciar um [jogo](#jogo), é criado um tabuleiro de 30 linhas e 40 colunas, com paredes (borda) ou sem.
+
+Suas propriedades principais são definidas pelo objeto:
+
+```javascript
+let grid = {
+	isFull: false,
+	rows: 30,
+	columns: 40,
+	bonus: true,
+};
+```
+
+- O _boolean_ `isFull` armazena `true` se o tabuleiro foi percorrido totalmente [(tabuleiro cheio)](#tabuleiro-cheio)
+- O _integer_ `rows` armazena a quantidade de linhas do tabuleiro
+- O _integer_ `columns` armazena a quantidade de colunas do tabuleiro
+- O _boolean_ `bonus` armazena `true` se a função de bônus foi ativada e `false` caso contrário
 
 ## Tabuleiro cheio
 

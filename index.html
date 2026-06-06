@@ -1,118 +1,164 @@
 <!doctype html>
 <html lang="pt-br">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Jogo</title>
-    <script src="script.js" defer></script>
-    <link rel="stylesheet" href="styles.css" />
-    <script
-      src="https://kit.fontawesome.com/1dc87a602b.js"
-      crossorigin="anonymous"
-    ></script>
-  </head>
-  <body>
-    <div id="menu">
-      <h1>Cobrinha</h1>
-      <div class="buttons">
-        <div class="compoundButton">
-          <button id="difficultyButton">Dificuldade</button>
-          <p id="difficulty">Normal</p>
-        </div>
-        <button id="start">Começar</button>
-        <div class="compoundButton">
-          <button id="musicButton">Música</button>
-          <p id="musicIcon"><i class="fa-solid fa-volume-xmark"></i></p>
-        </div>
-        <div class="compoundButton">
-          <button id="wallsButton">Paredes</button>
-          <p id="wallsIcon"><i class="fa-regular fa-circle-check"></i></p>
-        </div>
-        <div class="compoundButton">
-          <button id="podium">Placar</button>
-          <p><i class="fa-solid fa-ranking-star"></i></p>
-        </div>
-      </div>
-      <div>
-        <h2>
-          Projeto para a segunda fase do processo seletivo da Fellowship Of Game
-        </h2>
-        <h2>João Víctor Ferrari Silva</h2>
-        <h3>
-          <a href="https://freesound.org/people/nathanj848/sounds/749455/"
-            >underground song 2</a
-          >
-          by <a href="https://freesound.org/people/nathanj848/">nathanj848</a> |
-          License:
-          <a href="https://creativecommons.org/licenses/by/4.0/"
-            >Attribution 4.0</a
-          >
-        </h3>
-      </div>
-    </div>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Jogo</title>
+		<script src="script.js" defer></script>
+		<link rel="stylesheet" href="styles.css" />
+		<script
+			src="https://kit.fontawesome.com/1dc87a602b.js"
+			crossorigin="anonymous"
+		></script>
+	</head>
+	<body>
+		<button id="musicButton">
+			<i class="fa-solid fa-volume-xmark"></i>
+		</button>
+		<button id="developerMenuButton">
+			<i class="fa-solid fa-screwdriver-wrench"></i>
+		</button>
+		<div id="menu">
+			<h1>Cobrinha</h1>
+			<div class="buttons">
+				<div class="compoundButton">
+					<button id="difficultyButton">Dificuldade</button>
+					<p id="difficulty">Normal</p>
+				</div>
+				<button id="start">Começar</button>
+				<div class="compoundButton">
+					<button id="bonusButton">Bônus</button>
+					<p id="bonusIcon">
+						<i class="fa-solid fa-star"></i>
+					</p>
+				</div>
+				<div class="compoundButton">
+					<button id="wallsButton">Paredes</button>
+					<p id="wallsIcon">
+						<i class="fa-regular fa-circle-check"></i>
+					</p>
+				</div>
+				<div class="compoundButton">
+					<button id="podium">Placar</button>
+					<p><i class="fa-solid fa-ranking-star"></i></p>
+				</div>
+			</div>
+			<div>
+				<h2>
+					Projeto para a segunda fase do processo seletivo da
+					Fellowship Of Game
+				</h2>
+				<h2>João Víctor Ferrari Silva</h2>
+				<h3>
+					<a
+						href="https://freesound.org/people/nathanj848/sounds/749455/"
+						>underground song 2</a
+					>
+					by
+					<a href="https://freesound.org/people/nathanj848/"
+						>nathanj848</a
+					>
+					| License:
+					<a href="https://creativecommons.org/licenses/by/4.0/"
+						>Attribution 4.0</a
+					>
+				</h3>
 
-    <div id="gameOverPopUp" class="popUp">
-      <p>Fim do jogo!</p>
-      <div class="buttons">
-        <button class="return">Voltar ao menu</button>
-        <button class="tryAgain">Tentar novamente</button>
-      </div>
-      <div class="tableContainer">
-        <table>
-          <thead>
-            <tr>
-              <th>Jogador</th>
-              <th>Pontuação máxima</th>
-              <th>Paredes</th>
-              <th>Dificuldade</th>
-            </tr>
-          </thead>
-          <tbody id="tableBody"></tbody>
-        </table>
-      </div>
-    </div>
+				<div id="developerMenu">
+					<div>
+						<label for="rowSlider">Linhas:</label>
+						<input
+							type="range"
+							id="rowSlider"
+							min="5"
+							max="80"
+							value="30"
+							step="1"
+						/>
+						<h2 id="rowCounter">30</h2>
+					</div>
+					<div>
+						<label for="columnSlider">Colunas:</label>
+						<input
+							type="range"
+							id="columnSlider"
+							min="5"
+							max="80"
+							value="40"
+							step="1"
+						/>
+						<h2 id="columnCounter">40</h2>
+					</div>
+					<button id="invencibility">
+						<i class="fa-regular fa-circle"></i>
+					</button>
+					<h2>Invencibilidade</h2>
+				</div>
+			</div>
+		</div>
 
-    <div id="newGamePopUp" class="popUp">
-      <select id="selectPlayer">
-        <option value="new">Novo jogador</option>
-      </select>
-      <div class="buttons">
-        <div id="newName" class="compoundButton">
-          <button>Nome:</button>
-          <input id="nameField" placeholder="Nome" />
-        </div>
-        <button id="newGame">Iniciar</button>
-      </div>
-      <button class="return">Voltar ao menu</button>
-    </div>
+		<div id="gameOverPopUp" class="popUp">
+			<p>Fim do jogo!</p>
+			<div class="buttons">
+				<button class="return">Voltar ao menu</button>
+				<button class="tryAgain">Tentar novamente</button>
+			</div>
+			<div class="tableContainer">
+				<table>
+					<thead>
+						<tr>
+							<th>Jogador</th>
+							<th>Pontuação máxima</th>
+							<th>Paredes</th>
+							<th>Dificuldade</th>
+						</tr>
+					</thead>
+					<tbody id="tableBody"></tbody>
+				</table>
+			</div>
+		</div>
 
-    <div id="winPopUp" class="popUp">
-      <p>Você venceu, parabéns!</p>
-      <div class="buttons">
-        <div class="compoundButton">
-          <button>Sua pontuação</button>
-          <p id="winScore" class="currentScore">0</p>
-          <button class="return">Voltar ao menu</button>
-        </div>
-        <button class="tryAgain">Tentar novamente</button>
-      </div>
-    </div>
+		<div id="newGamePopUp" class="popUp">
+			<select id="selectPlayer">
+				<option value="new">Novo jogador</option>
+			</select>
+			<div class="buttons">
+				<div id="newName" class="compoundButton">
+					<button>Nome:</button>
+					<input id="nameField" placeholder="Nome" />
+				</div>
+				<button id="newGame">Iniciar</button>
+			</div>
+			<button class="return">Voltar ao menu</button>
+		</div>
 
-    <div id="game">
-      <div class="buttons">
-        <div class="compoundButton">
-          <button>Pontuação máxima</button>
-          <p id="maxScore">0</p>
-        </div>
-        <div class="compoundButton">
-          <button>Pontuação</button>
-          <p id="score" class="currentScore">0</p>
-        </div>
-        <button id="pause"><i class="fa-solid fa-pause"></i></button>
-        <button id="restart">Reiniciar</button>
-        <button class="return">Retornar ao menu</button>
-        <p id="lastKey"><i class="fa-solid fa-arrow-down"></i></p>
-      </div>
-    </div>
-  </body>
+		<div id="winPopUp" class="popUp">
+			<p>Você venceu, parabéns!</p>
+			<div class="buttons">
+				<div class="compoundButton">
+					<button>Sua pontuação</button>
+					<p id="winScore" class="currentScore">0</p>
+					<button class="return">Voltar ao menu</button>
+				</div>
+				<button class="tryAgain">Tentar novamente</button>
+			</div>
+		</div>
+
+		<div id="game">
+			<div class="buttons">
+				<div class="compoundButton">
+					<button>Pontuação máxima</button>
+					<p id="maxScore">0</p>
+				</div>
+				<div class="compoundButton">
+					<button>Pontuação</button>
+					<p id="score" class="currentScore">0</p>
+				</div>
+				<button id="pause"><i class="fa-solid fa-pause"></i></button>
+				<button id="restart">Reiniciar</button>
+				<button class="return">Retornar ao menu</button>
+				<p id="lastKey"><i class="fa-solid fa-arrow-down"></i></p>
+			</div>
+		</div>
+	</body>
 </html>
